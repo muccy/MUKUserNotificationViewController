@@ -10,4 +10,5 @@
 
 @interface TestViewController : UIViewController
 - (IBAction)showNotificationButtonPressed:(id)sender;
+- (IBAction)hideNotificationButtonPressed:(id)sender;
 @end

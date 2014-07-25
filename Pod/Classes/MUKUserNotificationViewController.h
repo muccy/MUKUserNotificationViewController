@@ -14,4 +14,5 @@
 @property (nonatomic, readonly) MUKUserNotification *displayedNotification;
 
 - (void)showNotification:(MUKUserNotification *)notification animated:(BOOL)animated completion:(void (^)(BOOL completed))completionHandler;
+- (void)hideNotificationAnimated:(BOOL)animated completion:(void (^)(BOOL completed))completionHandler;
 @end

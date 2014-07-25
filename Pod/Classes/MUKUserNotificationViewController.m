@@ -8,7 +8,9 @@
 
 #import "MUKUserNotificationViewController.h"
 
-static NSTimeInterval const kNotificationViewAnimationDuration = 0.2;
+static NSTimeInterval const kNotificationViewAnimationDuration = 0.15;
+static CGFloat const kNotificationViewAnimationSpringDamping = 1.0f;
+static CGFloat const kNotificationViewAnimationSpringVelocity = 1.0f;
 static CGFloat const kDefaultStatusBarHeight = 20.0f;
 
 @interface MUKUserNotificationViewController ()
@@ -16,6 +18,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 
 @property (nonatomic) BOOL viewWillAppearAlreadyCalled;
 @property (nonatomic) CGFloat statusBarHeight;
+@property (nonatomic) NSMapTable *notificationToViewMapping;
 @end
 
 @implementation MUKUserNotificationViewController
@@ -24,8 +27,18 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        _statusBarHeight = kDefaultStatusBarHeight;
+        CommonInit(self);
     }
+    
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        CommonInit(self);
+    }
+    
     return self;
 }
 
@@ -59,6 +72,10 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     return self.displayedNotification != nil;
 }
 
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
+    return UIStatusBarAnimationSlide;
+}
+
 #pragma mark - Accessors
 
 - (void)setContentViewController:(UIViewController *)contentViewController {
@@ -82,6 +99,9 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     // Create notification view
     UIView *notificationView = [self newViewForUserNotification:notification];
     
+    // Map view to notification
+    [self setView:notificationView forUserNotification:notification];
+    
     // Move offscreen
     CGAffineTransform const targetTransform = notificationView.transform;
     notificationView.transform = CGAffineTransformMakeTranslation(0.0f, -CGRectGetHeight(notificationView.frame));
@@ -90,12 +110,63 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     [self.view addSubview:notificationView];
     
     // Animate in
-    [UIView animateWithDuration:(animated ? kNotificationViewAnimationDuration : 0.0) delay:0.0 usingSpringWithDamping:1.0f initialSpringVelocity:1.0f options:0 animations:^{
+    NSTimeInterval const duration = animated ? kNotificationViewAnimationDuration : 0.0;
+    [UIView animateWithDuration:duration delay:0.0 usingSpringWithDamping:kNotificationViewAnimationSpringDamping initialSpringVelocity:kNotificationViewAnimationSpringVelocity options:0 animations:^{
+        // Hide status bar
         [self setNeedsStatusBarAppearanceUpdate];
-        notificationView.transform = targetTransform;
-
+        
+        // Resize content view controller
         self.contentViewController.view.frame = [self contentViewControllerFrameWithInsets:UIEdgeInsetsMake(self.statusBarHeight, 0.0f, 0.0f, 0.0f)];
+        
+        // Move notification view in
+        notificationView.transform = targetTransform;
     } completion:completionHandler];
+}
+
+- (void)hideNotificationAnimated:(BOOL)animated completion:(void (^)(BOOL completed))completionHandler
+{
+    if (!self.displayedNotification) {
+        return;
+    }
+    
+    // Get view for notification
+    UIView *const notificationView = [self viewForUserNotification:self.displayedNotification];
+    
+    // Set no displayed notification is here
+    self.displayedNotification = nil;
+    
+    if (!notificationView) {
+        return;
+    }
+    
+    // Animate out
+    NSTimeInterval const duration = animated ? kNotificationViewAnimationDuration : 0.0;
+    
+    [UIView animateWithDuration:duration delay:0.0 usingSpringWithDamping:kNotificationViewAnimationSpringDamping initialSpringVelocity:kNotificationViewAnimationSpringVelocity options:0 animations:^{
+        // Move out
+        notificationView.transform = CGAffineTransformMakeTranslation(0.0f, -CGRectGetHeight(notificationView.frame));
+        
+        // Resize content view controller
+        self.contentViewController.view.frame = [self contentViewControllerFrameWithInsets:UIEdgeInsetsZero];
+        
+        // Show status bar (order matters!)
+        [self setNeedsStatusBarAppearanceUpdate];
+    } completion:^(BOOL finished) {
+        // Remove view from view hierarchy
+        [notificationView removeFromSuperview];
+        
+        // Notify completion if needed
+        if (completionHandler) {
+            completionHandler(finished);
+        }
+    }];
+}
+
+#pragma mark - Private 
+
+static void CommonInit(MUKUserNotificationViewController *me) {
+    me->_statusBarHeight = kDefaultStatusBarHeight;
+    me->_notificationToViewMapping = [NSMapTable weakToWeakObjectsMapTable];
 }
 
 #pragma mark - Private — Content View Controller
@@ -148,6 +219,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     viewController.view.frame = [self contentViewControllerFrameWithInsets:UIEdgeInsetsZero];
     viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:viewController.view];
+    [self.view sendSubviewToBack:viewController.view];
     
     [viewController didMoveToParentViewController:self];
 }
@@ -206,6 +278,21 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 - (UIColor *)viewBackgroundColorForUserNotification:(MUKUserNotification *)notification
 {
     return [UIColor redColor];
+}
+
+#pragma mark - Private — Notification to view mapping
+
+- (UIView *)viewForUserNotification:(MUKUserNotification *)notification {
+    if (!notification) {
+        return nil;
+    }
+    
+    return [self.notificationToViewMapping objectForKey:notification];
+}
+
+- (void)setView:(UIView *)view forUserNotification:(MUKUserNotification *)notification
+{
+    [self.notificationToViewMapping setObject:view forKey:notification];
 }
 
 @end

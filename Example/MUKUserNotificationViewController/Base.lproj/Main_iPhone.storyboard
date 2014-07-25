@@ -52,11 +52,23 @@
                                     <action selector="showNotificationButtonPressed:" destination="rzV-aM-PQI" eventType="touchUpInside" id="3rz-gH-3E1"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pFa-E8-a3E">
+                                <rect key="frame" x="105" y="338" width="112" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Hide notification">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="hideNotificationButtonPressed:" destination="rzV-aM-PQI" eventType="touchUpInside" id="3hO-2K-Kho"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.80000001190000003" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstAttribute="centerY" secondItem="tcn-s1-36e" secondAttribute="centerY" id="3j9-wT-CHr"/>
+                            <constraint firstItem="pFa-E8-a3E" firstAttribute="top" secondItem="H8q-NE-hxe" secondAttribute="bottom" constant="-2" id="1jv-K5-Mic"/>
                             <constraint firstAttribute="centerX" secondItem="tcn-s1-36e" secondAttribute="centerX" constant="-0.5" id="7MC-5i-1ey"/>
+                            <constraint firstItem="tcn-s1-36e" firstAttribute="centerX" secondItem="pFa-E8-a3E" secondAttribute="centerX" id="DyG-DW-PmN"/>
+                            <constraint firstItem="tcn-s1-36e" firstAttribute="top" secondItem="gLi-pm-MTA" secondAttribute="bottom" constant="222" id="F1v-NX-3NH"/>
                             <constraint firstItem="H8q-NE-hxe" firstAttribute="top" secondItem="tcn-s1-36e" secondAttribute="bottom" constant="8" id="Qk1-b1-agV"/>
                             <constraint firstItem="tcn-s1-36e" firstAttribute="centerX" secondItem="H8q-NE-hxe" secondAttribute="centerX" constant="0.5" id="ojO-zl-KKG"/>
                         </constraints>
