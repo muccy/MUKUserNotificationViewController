@@ -43,6 +43,8 @@
 		06C639B61982B2C900CA1948 /* MUKUserNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUKUserNotificationViewController.m; sourceTree = "<group>"; };
 		06C639B81982BD1200CA1948 /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
 		06C639B91982BD1300CA1948 /* TestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestViewController.m; sourceTree = "<group>"; };
+		06C639BB1982DC8700CA1948 /* MUKUserNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MUKUserNotification.h; sourceTree = "<group>"; };
+		06C639BC1982DC8700CA1948 /* MUKUserNotification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MUKUserNotification.m; sourceTree = "<group>"; };
 		0C919C9FE56A46CE9E6CC9B6 /* libPods-MUKUserNotificationViewController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MUKUserNotificationViewController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		29E9DBEA28604FE1B0160A5C /* Pods-MUKUserNotificationViewController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MUKUserNotificationViewController.xcconfig"; path = "Pods/Pods-MUKUserNotificationViewController.xcconfig"; sourceTree = "<group>"; };
 		5137550E9D1C429486898E61 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -120,6 +122,8 @@
 			children = (
 				06C639B51982B2C900CA1948 /* MUKUserNotificationViewController.h */,
 				06C639B61982B2C900CA1948 /* MUKUserNotificationViewController.m */,
+				06C639BB1982DC8700CA1948 /* MUKUserNotification.h */,
+				06C639BC1982DC8700CA1948 /* MUKUserNotification.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
