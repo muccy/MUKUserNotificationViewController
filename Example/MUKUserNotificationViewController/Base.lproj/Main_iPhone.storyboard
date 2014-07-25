@@ -13,7 +13,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <connections>
-                            <segue destination="rzV-aM-PQI" kind="embed" id="DB4-9x-c3h"/>
+                            <segue destination="gQ0-YE-gZP" kind="embed" id="DB4-9x-c3h"/>
                         </connections>
                     </containerView>
                     <connections>
@@ -50,8 +50,27 @@
                         </constraints>
                     </view>
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="367-3U-8dB"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cf5-kY-XKd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1216" y="-127"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="gDX-mQ-XS6">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="gQ0-YE-gZP" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="JAh-P8-GE3">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="rzV-aM-PQI" kind="relationship" relationship="rootViewController" id="TiR-R5-tKn"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="E5F-dV-BTy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="690" y="-127"/>
         </scene>
