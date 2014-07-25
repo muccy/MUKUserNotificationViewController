@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface MUKUserNotificationViewController : UIViewController
-
+@property (nonatomic, strong) UIViewController *contentViewController;
 @end
