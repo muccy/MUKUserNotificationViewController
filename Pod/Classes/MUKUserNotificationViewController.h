@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MUKUserNotificationViewController/MUKUserNotification.h>
 
 @interface MUKUserNotificationViewController : UIViewController
 @property (nonatomic, strong) UIViewController *contentViewController;
+@property (nonatomic, readonly) MUKUserNotification *displayedNotification;
+
+- (void)showNotification:(MUKUserNotification *)notification animated:(BOOL)animated completion:(void (^)(BOOL completed))completionHandler;
 @end

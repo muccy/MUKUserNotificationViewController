@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface TestViewController : UIViewController
-
+- (IBAction)showNotificationButtonPressed:(id)sender;
 @end

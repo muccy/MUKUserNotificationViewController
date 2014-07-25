@@ -43,13 +43,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H8q-NE-hxe">
-                                <rect key="frame" x="143" y="310" width="35" height="30"/>
+                                <rect key="frame" x="101" y="310" width="119" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Push">
+                                <state key="normal" title="Show notification">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="rzV-aM-PQI" kind="push" id="atG-zs-OkV"/>
+                                    <action selector="showNotificationButtonPressed:" destination="rzV-aM-PQI" eventType="touchUpInside" id="3rz-gH-3E1"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -111,7 +111,4 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
-    <inferredMetricsTieBreakers>
-        <segue reference="TiR-R5-tKn"/>
-    </inferredMetricsTieBreakers>
 </document>

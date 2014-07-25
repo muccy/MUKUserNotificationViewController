@@ -7,6 +7,7 @@
 //
 
 #import "TestViewController.h"
+#import <MUKUserNotificationViewController/MUKUserNotificationViewController.h>
 
 @interface TestViewController ()
 
@@ -41,6 +42,35 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+}
+
+#pragma mark - Actions
+
+- (void)showNotificationButtonPressed:(id)sender {
+    MUKUserNotification *notification = [[MUKUserNotification alloc] init];
+    notification.text = @"Alert Message";
+    
+    [[self parentUserNotificationViewController] showNotification:notification animated:YES completion:^(BOOL completed)
+    {
+        NSLog(@"Notification displayed (completed? %@)", completed ? @"Y" : @"N");
+    }];
+}
+
+#pragma mark - Private
+
+- (MUKUserNotificationViewController *)parentUserNotificationViewController {
+    UIViewController *viewController = self;
+    MUKUserNotificationViewController *foundViewController = nil;
+    
+    do {
+        viewController = viewController.parentViewController;
+        if ([viewController isKindOfClass:[MUKUserNotificationViewController class]])
+        {
+            foundViewController = (MUKUserNotificationViewController *)viewController;
+        }
+    } while (!foundViewController && viewController);
+    
+    return foundViewController;
 }
 
 @end
