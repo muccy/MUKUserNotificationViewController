@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		06C639AF1982B20200CA1948 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 06C639AC1982B20200CA1948 /* .gitkeep */; };
-		06C639B01982B20200CA1948 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 06C639AE1982B20200CA1948 /* .gitkeep */; };
+		06C639B71982B2C900CA1948 /* MUKUserNotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C639B61982B2C900CA1948 /* MUKUserNotificationViewController.m */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -40,7 +40,8 @@
 
 /* Begin PBXFileReference section */
 		06C639AC1982B20200CA1948 /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
-		06C639AE1982B20200CA1948 /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
+		06C639B51982B2C900CA1948 /* MUKUserNotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MUKUserNotificationViewController.h; sourceTree = "<group>"; };
+		06C639B61982B2C900CA1948 /* MUKUserNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUKUserNotificationViewController.m; sourceTree = "<group>"; };
 		0C919C9FE56A46CE9E6CC9B6 /* libPods-MUKUserNotificationViewController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MUKUserNotificationViewController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		29E9DBEA28604FE1B0160A5C /* Pods-MUKUserNotificationViewController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MUKUserNotificationViewController.xcconfig"; path = "Pods/Pods-MUKUserNotificationViewController.xcconfig"; sourceTree = "<group>"; };
 		5137550E9D1C429486898E61 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,7 +119,8 @@
 		06C639AD1982B20200CA1948 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				06C639AE1982B20200CA1948 /* .gitkeep */,
+				06C639B51982B2C900CA1948 /* MUKUserNotificationViewController.h */,
+				06C639B61982B2C900CA1948 /* MUKUserNotificationViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -299,7 +301,6 @@
 				6003F5A4195388D20070C39A /* Main_iPad.storyboard in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				06C639AF1982B20200CA1948 /* .gitkeep in Resources */,
-				06C639B01982B20200CA1948 /* .gitkeep in Resources */,
 				6003F5A1195388D20070C39A /* Main_iPhone.storyboard in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 			);
@@ -383,6 +384,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06C639B71982B2C900CA1948 /* MUKUserNotificationViewController.m in Sources */,
 				6003F59E195388D20070C39A /* MUKAppDelegate.m in Sources */,
 				6003F5A7195388D20070C39A /* MUKViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
