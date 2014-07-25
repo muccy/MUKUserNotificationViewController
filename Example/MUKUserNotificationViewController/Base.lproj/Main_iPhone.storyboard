@@ -13,7 +13,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <connections>
-                            <segue destination="gQ0-YE-gZP" kind="embed" id="DB4-9x-c3h"/>
+                            <segue destination="3GG-Y1-MZR" kind="embed" id="rMT-Kp-cge"/>
                         </connections>
                     </containerView>
                     <connections>
@@ -24,7 +24,7 @@
             </objects>
             <point key="canvasLocation" x="161" y="-127"/>
         </scene>
-        <!--Test View Controller-->
+        <!--Test View Controller - Hey Hey-->
         <scene sceneID="pYo-ol-PSg">
             <objects>
                 <viewController automaticallyAdjustsScrollViewInsets="NO" id="rzV-aM-PQI" customClass="TestViewController" sceneMemberID="viewController">
@@ -42,24 +42,37 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H8q-NE-hxe">
+                                <rect key="frame" x="143" y="310" width="35" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Push">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="rzV-aM-PQI" kind="push" id="atG-zs-OkV"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.80000001190000003" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="centerY" secondItem="tcn-s1-36e" secondAttribute="centerY" id="3j9-wT-CHr"/>
                             <constraint firstAttribute="centerX" secondItem="tcn-s1-36e" secondAttribute="centerX" constant="-0.5" id="7MC-5i-1ey"/>
+                            <constraint firstItem="H8q-NE-hxe" firstAttribute="top" secondItem="tcn-s1-36e" secondAttribute="bottom" constant="8" id="Qk1-b1-agV"/>
+                            <constraint firstItem="tcn-s1-36e" firstAttribute="centerX" secondItem="H8q-NE-hxe" secondAttribute="centerX" constant="0.5" id="ojO-zl-KKG"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" id="367-3U-8dB"/>
+                    <navigationItem key="navigationItem" title="Hey Hey" id="367-3U-8dB"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cf5-kY-XKd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1216" y="-127"/>
+            <point key="canvasLocation" x="1742" y="-127"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Navigation Controller - Item-->
         <scene sceneID="gDX-mQ-XS6">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="gQ0-YE-gZP" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="e6V-by-pfS"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="JAh-P8-GE3">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -72,6 +85,24 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E5F-dV-BTy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="1164" y="-127"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="5dT-hS-YhO">
+            <objects>
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="3GG-Y1-MZR" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="u0G-t3-H3r">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="gQ0-YE-gZP" kind="relationship" relationship="viewControllers" id="y5r-bU-yHU"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cb9-0Q-Ghg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
             <point key="canvasLocation" x="690" y="-127"/>
         </scene>
     </scenes>
@@ -80,4 +111,7 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
+    <inferredMetricsTieBreakers>
+        <segue reference="TiR-R5-tKn"/>
+    </inferredMetricsTieBreakers>
 </document>
