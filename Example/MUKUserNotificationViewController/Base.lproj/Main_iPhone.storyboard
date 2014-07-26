@@ -83,7 +83,7 @@
         <!--Navigation Controller - Item-->
         <scene sceneID="gDX-mQ-XS6">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="gQ0-YE-gZP" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="gQ0-YE-gZP" customClass="NavigationController" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="e6V-by-pfS"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="JAh-P8-GE3">
@@ -99,10 +99,10 @@
             </objects>
             <point key="canvasLocation" x="1164" y="-127"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Tab Bar View Controller-->
         <scene sceneID="5dT-hS-YhO">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="3GG-Y1-MZR" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="3GG-Y1-MZR" customClass="TabBarViewController" sceneMemberID="viewController">
                     <toolbarItems/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="u0G-t3-H3r">

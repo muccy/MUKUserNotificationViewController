@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		06C639AF1982B20200CA1948 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 06C639AC1982B20200CA1948 /* .gitkeep */; };
 		06C639BA1982BD1300CA1948 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C639B91982BD1300CA1948 /* TestViewController.m */; };
+		06C639C1198386A700CA1948 /* TabBarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C639C0198386A700CA1948 /* TabBarViewController.m */; };
+		06C639C41983880D00CA1948 /* NavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C639C31983880D00CA1948 /* NavigationController.m */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -45,6 +47,10 @@
 		06C639B91982BD1300CA1948 /* TestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestViewController.m; sourceTree = "<group>"; };
 		06C639BB1982DC8700CA1948 /* MUKUserNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MUKUserNotification.h; sourceTree = "<group>"; };
 		06C639BC1982DC8700CA1948 /* MUKUserNotification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MUKUserNotification.m; sourceTree = "<group>"; };
+		06C639BF198386A700CA1948 /* TabBarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarViewController.h; sourceTree = "<group>"; };
+		06C639C0198386A700CA1948 /* TabBarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarViewController.m; sourceTree = "<group>"; };
+		06C639C21983880D00CA1948 /* NavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationController.h; sourceTree = "<group>"; };
+		06C639C31983880D00CA1948 /* NavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationController.m; sourceTree = "<group>"; };
 		0C919C9FE56A46CE9E6CC9B6 /* libPods-MUKUserNotificationViewController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MUKUserNotificationViewController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		29E9DBEA28604FE1B0160A5C /* Pods-MUKUserNotificationViewController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MUKUserNotificationViewController.xcconfig"; path = "Pods/Pods-MUKUserNotificationViewController.xcconfig"; sourceTree = "<group>"; };
 		5137550E9D1C429486898E61 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -169,6 +175,10 @@
 			children = (
 				6003F59C195388D20070C39A /* AppDelegate.h */,
 				6003F59D195388D20070C39A /* AppDelegate.m */,
+				06C639BF198386A700CA1948 /* TabBarViewController.h */,
+				06C639C0198386A700CA1948 /* TabBarViewController.m */,
+				06C639C21983880D00CA1948 /* NavigationController.h */,
+				06C639C31983880D00CA1948 /* NavigationController.m */,
 				06C639B81982BD1200CA1948 /* TestViewController.h */,
 				06C639B91982BD1300CA1948 /* TestViewController.m */,
 				6003F59F195388D20070C39A /* Main_iPhone.storyboard */,
@@ -387,7 +397,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06C639C1198386A700CA1948 /* TabBarViewController.m in Sources */,
 				06C639BA1982BD1300CA1948 /* TestViewController.m in Sources */,
+				06C639C41983880D00CA1948 /* NavigationController.m in Sources */,
 				6003F59E195388D20070C39A /* AppDelegate.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 			);

@@ -9,6 +9,8 @@
 #import "TestViewController.h"
 #import <MUKUserNotificationViewController/MUKUserNotificationViewController.h>
 
+#define DEBUG_STATUS_BAR_HIDDEN     1
+
 @interface TestViewController ()
 
 @end
@@ -43,6 +45,14 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 }
+
+#pragma mark - Overrides
+
+#if DEBUG_STATUS_BAR_HIDDEN
+- (BOOL)prefersStatusBarHidden {
+    return YES;
+}
+#endif
 
 #pragma mark - Actions
 

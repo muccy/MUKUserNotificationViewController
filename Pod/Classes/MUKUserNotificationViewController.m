@@ -76,6 +76,18 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     return UIStatusBarAnimationSlide;
 }
 
+- (UIViewController *)childViewControllerForStatusBarHidden {
+    if ([self prefersStatusBarHidden]) {
+        return nil;
+    }
+    
+    return self.contentViewController;
+}
+
+- (UIViewController *)childViewControllerForStatusBarStyle {
+    return self.contentViewController;
+}
+
 #pragma mark - Accessors
 
 - (void)setContentViewController:(UIViewController *)contentViewController {
