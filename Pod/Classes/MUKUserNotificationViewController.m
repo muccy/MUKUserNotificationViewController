@@ -16,7 +16,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 @interface MUKUserNotificationViewController ()
 @property (nonatomic, readwrite) NSMutableArray *notificationQueue;
 
-@property (nonatomic) BOOL viewWillAppearAlreadyCalled;
+@property (nonatomic) BOOL viewWillAppearAlreadyCalled, hasGapAboveContentViewController, needsNavigationBarAdjustmentInLandscape;
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) NSMapTable *notificationToViewMapping;
 @end
@@ -66,6 +66,19 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     }
     
     self.viewWillAppearAlreadyCalled = YES;
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    // Ensure gap above content view controller is displayed in portrait.
+    // This is needed because if a notification is displayed in landscape, inset
+    // is not set (due UIKit implementation of UINavigationBar). So, when you
+    // rotate phone to portrait, notification view overlaps navigation bar.
+    if (self.hasGapAboveContentViewController && UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]))
+    {
+        self.contentViewController.view.frame = [self contentViewControllerFrameWithInsets:UIEdgeInsetsMake(self.statusBarHeight, 0.0f, 0.0f, 0.0f)];
+    }
 }
 
 #pragma mark - Overrides
@@ -118,8 +131,23 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     // Get real status bar height if available
     [self captureStatusBarHeightIfAvailable];
     
-    // Don't touch content view controller if status bar is hidden
-    BOOL const shouldResizeContentViewController = ![[UIApplication sharedApplication] isStatusBarHidden];
+    // Don't touch content view controller if status bar is hidden and we are
+    // not in landscape (because UIKit implementation of UINavigationController)
+    BOOL const portraitStatusBar = UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]);
+    BOOL const statusBarHidden = [[UIApplication sharedApplication] isStatusBarHidden];
+    BOOL const shouldResizeContentViewController = !statusBarHidden && portraitStatusBar;
+    
+    // Mark if there is a gap above content view controller, preserving
+    // previous positive state
+    if (!self.hasGapAboveContentViewController) {
+        self.hasGapAboveContentViewController = !statusBarHidden;
+    }
+    
+    // Mark if navigation bar in landscape will be messed up, preserving
+    // previous positive state
+    if (!self.needsNavigationBarAdjustmentInLandscape) {
+        self.needsNavigationBarAdjustmentInLandscape = portraitStatusBar && !statusBarHidden;
+    }
     
     // Create notification view
     UIView *notificationView = [self newViewForUserNotification:notification];
@@ -177,7 +205,13 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     }
     
     // Don't touch content view controller if there are pending notifications
-    BOOL const shouldResizeContentViewController = [self.notifications count] == 0;
+    NSUInteger const pendingNotificationCount = [self.notifications count];
+    BOOL const shouldResizeContentViewController = pendingNotificationCount == 0;
+    
+    // No more need to preserve gap if there aren't pending notifications
+    if (pendingNotificationCount == 0) {
+        self.hasGapAboveContentViewController = NO;
+    }
     
     // Animate out
     NSTimeInterval const duration = animated ? kNotificationViewAnimationDuration : 0.0;
@@ -193,7 +227,20 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
         
         // Show status bar (order matters!)
         [self setNeedsStatusBarAppearanceUpdate];
+        
+        // Adjust navigation bar if possible and needed
+        if (self.needsNavigationBarAdjustmentInLandscape) {
+            UINavigationController *navigationController = [self autodiscoveredContainedNavigationController];
+            [navigationController setNavigationBarHidden:YES];
+            [navigationController setNavigationBarHidden:NO];
+        }
     } completion:^(BOOL finished) {
+        // No more need to preserve navigation bar if there aren't pending
+        // notifications
+        if (pendingNotificationCount == 0) {
+            self.needsNavigationBarAdjustmentInLandscape = NO;
+        }
+        
         // Remove view from view hierarchy
         [notificationView removeFromSuperview];
         
@@ -220,6 +267,26 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     me->_statusBarHeight = kDefaultStatusBarHeight;
     me->_notificationToViewMapping = [NSMapTable weakToWeakObjectsMapTable];
     me->_notificationQueue = [[NSMutableArray alloc] init];
+}
+
+- (UINavigationController *)autodiscoveredContainedNavigationController {
+    UINavigationController *navController = nil;
+    
+    if ([self.contentViewController isKindOfClass:[UINavigationController class]])
+    {
+        navController = (UINavigationController *)self.contentViewController;
+    }
+    else if ([self.contentViewController isKindOfClass:[UITabBarController class]])
+    {
+        UITabBarController *tabBarController = (UITabBarController *)self.contentViewController;
+        
+        if ([tabBarController.selectedViewController isKindOfClass:[UINavigationController class]])
+        {
+            navController = (UINavigationController *)tabBarController.selectedViewController;
+        }
+    }
+    
+    return navController;
 }
 
 #pragma mark - Private — Content View Controller
