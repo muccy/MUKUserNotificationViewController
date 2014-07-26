@@ -56,14 +56,26 @@
 
 #pragma mark - Actions
 
-- (void)showNotificationButtonPressed:(id)sender {
+- (void)showExpiringNotificationButtonPressed:(id)sender {
     MUKUserNotification *notification = [[MUKUserNotification alloc] init];
     notification.text = @"Alert Message";
+    notification.duration = 2.0;
     
     [[self parentUserNotificationViewController] showNotification:notification animated:YES completion:^(BOOL completed)
-    {
-        NSLog(@"Notification displayed (completed? %@)", completed ? @"Y" : @"N");
-    }];
+     {
+         NSLog(@"Notification displayed (completed? %@)", completed ? @"Y" : @"N");
+     }];
+}
+
+- (void)showStickyNotificationButtonPressed:(id)sender {
+    MUKUserNotification *notification = [[MUKUserNotification alloc] init];
+    notification.text = @"Alert Message";
+    notification.duration = MUKUserNotificationDurationInfinite;
+    
+    [[self parentUserNotificationViewController] showNotification:notification animated:YES completion:^(BOOL completed)
+     {
+         NSLog(@"Notification displayed (completed? %@)", completed ? @"Y" : @"N");
+     }];
 }
 
 - (IBAction)hideNotificationButtonPressed:(id)sender {

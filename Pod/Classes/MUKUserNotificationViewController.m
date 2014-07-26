@@ -147,7 +147,17 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
         
         // Move notification view in
         notificationView.transform = targetTransform;
-    } completion:completionHandler];
+    } completion:^(BOOL finished) {
+        // Set expiration if needed
+        if ([self notificationCanExpire:notification]) {
+            [self scheduleExpirationForNotification:notification];
+        }
+        
+        // Invoke completion handler if any
+        if (completionHandler) {
+            completionHandler(finished);
+        }
+    }];
 }
 
 - (void)hideNotification:(MUKUserNotification *)notification animated:(BOOL)animated completion:(void (^)(BOOL))completionHandler
@@ -192,6 +202,16 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
             completionHandler(finished);
         }
     }];
+}
+
+#pragma mark - Expiration
+
+- (void)notificationWillExpire:(MUKUserNotification *)notification {
+    //
+}
+
+- (void)notificationDidExpire:(MUKUserNotification *)notification {
+    //
 }
 
 #pragma mark - Private 
@@ -348,6 +368,26 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     if (notification) {
         [self.notificationQueue removeObject:notification];
     }
+}
+
+#pragma mark - Private — Notification Expiration
+
+- (BOOL)notificationCanExpire:(MUKUserNotification *)notification {
+    return notification.duration > 0.0f;
+}
+
+- (void)scheduleExpirationForNotification:(MUKUserNotification *)notification
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(notification.duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        // If notification is still there proceed with expiration
+        if ([self.notifications containsObject:notification]) {
+            [self notificationWillExpire:notification];
+            [self hideNotification:notification animated:YES completion:^(BOOL completed)
+            {
+                [self notificationDidExpire:notification];
+            }];
+        }
+    });
 }
 
 @end

@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSTimeInterval const MUKUserNotificationDurationInfinite;
+
 @interface MUKUserNotification : NSObject
 @property (nonatomic, copy) NSString *text;
+@property (nonatomic) NSTimeInterval duration;
 @end

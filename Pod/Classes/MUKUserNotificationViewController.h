@@ -18,3 +18,8 @@
 - (void)showNotification:(MUKUserNotification *)notification animated:(BOOL)animated completion:(void (^)(BOOL completed))completionHandler;
 - (void)hideNotification:(MUKUserNotification *)notification animated:(BOOL)animated completion:(void (^)(BOOL completed))completionHandler;
 @end
+
+@interface MUKUserNotificationViewController (Expiration)
+- (void)notificationWillExpire:(MUKUserNotification *)notification;
+- (void)notificationDidExpire:(MUKUserNotification *)notification;
+@end
