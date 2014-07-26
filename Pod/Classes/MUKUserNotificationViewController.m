@@ -105,8 +105,11 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     // Mark as displayed notification
     self.displayedNotification = notification;
     
-    // Get real status bar height is available
+    // Get real status bar height if available
     [self captureStatusBarHeightIfAvailable];
+    
+    // Don't touch content view controller if status bar is hidden
+    BOOL const shouldResizeContentViewController = ![[UIApplication sharedApplication] isStatusBarHidden];
     
     // Create notification view
     UIView *notificationView = [self newViewForUserNotification:notification];
@@ -127,8 +130,10 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
         // Hide status bar
         [self setNeedsStatusBarAppearanceUpdate];
         
-        // Resize content view controller
-        self.contentViewController.view.frame = [self contentViewControllerFrameWithInsets:UIEdgeInsetsMake(self.statusBarHeight, 0.0f, 0.0f, 0.0f)];
+        // Resize content view controller if needed
+        if (shouldResizeContentViewController) {
+            self.contentViewController.view.frame = [self contentViewControllerFrameWithInsets:UIEdgeInsetsMake(self.statusBarHeight, 0.0f, 0.0f, 0.0f)];
+        }
         
         // Move notification view in
         notificationView.transform = targetTransform;
@@ -270,10 +275,14 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     return view;
 }
 
++ (CGFloat)actualStatusBarHeight {
+    CGRect const statusBarFrame = [[UIApplication sharedApplication] statusBarFrame];
+    return fminf(CGRectGetWidth(statusBarFrame), CGRectGetHeight(statusBarFrame));
+}
+
 - (void)captureStatusBarHeightIfAvailable {
     if (![[UIApplication sharedApplication] isStatusBarHidden]) {
-        CGRect const statusBarFrame = [[UIApplication sharedApplication] statusBarFrame];
-        CGFloat const statusBarHeight = fminf(CGRectGetWidth(statusBarFrame), CGRectGetHeight(statusBarFrame));
+        CGFloat const statusBarHeight = [[self class] actualStatusBarHeight];
         
         if (statusBarHeight > 0.0f) {
             self.statusBarHeight = statusBarHeight;

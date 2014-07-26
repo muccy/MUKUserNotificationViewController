@@ -9,7 +9,7 @@
 #import "TestViewController.h"
 #import <MUKUserNotificationViewController/MUKUserNotificationViewController.h>
 
-#define DEBUG_STATUS_BAR_HIDDEN     1
+#define DEBUG_STATUS_BAR_HIDDEN     0
 
 @interface TestViewController ()
 
