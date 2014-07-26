@@ -11,8 +11,10 @@
 
 @interface MUKUserNotificationViewController : UIViewController
 @property (nonatomic, strong) UIViewController *contentViewController;
-@property (nonatomic, readonly) MUKUserNotification *displayedNotification;
+
+@property (nonatomic, readonly) NSArray *notifications;
+@property (nonatomic, readonly) MUKUserNotification *visibleNotification;
 
 - (void)showNotification:(MUKUserNotification *)notification animated:(BOOL)animated completion:(void (^)(BOOL completed))completionHandler;
-- (void)hideNotificationAnimated:(BOOL)animated completion:(void (^)(BOOL completed))completionHandler;
+- (void)hideNotification:(MUKUserNotification *)notification animated:(BOOL)animated completion:(void (^)(BOOL completed))completionHandler;
 @end

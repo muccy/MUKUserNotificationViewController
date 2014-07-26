@@ -67,7 +67,8 @@
 }
 
 - (IBAction)hideNotificationButtonPressed:(id)sender {
-    [[self parentUserNotificationViewController] hideNotificationAnimated:YES completion:^(BOOL completed) {
+    MUKUserNotificationViewController *const userNotificationViewController = [self parentUserNotificationViewController];
+    [userNotificationViewController hideNotification:userNotificationViewController.visibleNotification animated:YES completion:^(BOOL completed) {
         NSLog(@"Notification hidden (completed? %@)", completed ? @"Y" : @"N");
     }];
 }
