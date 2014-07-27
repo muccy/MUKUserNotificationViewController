@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MUKUserNotificationViewController/MUKUserNotification.h>
+#import <MUKUserNotificationViewController/MUKUserNotificationView.h>
 
 @interface MUKUserNotificationViewController : UIViewController
 @property (nonatomic, strong) UIViewController *contentViewController;
@@ -22,4 +23,15 @@
 @interface MUKUserNotificationViewController (Expiration)
 - (void)notificationWillExpire:(MUKUserNotification *)notification;
 - (void)notificationDidExpire:(MUKUserNotification *)notification;
+@end
+
+@interface MUKUserNotificationViewController (NotificationView)
+- (MUKUserNotificationView *)viewForNotification:(MUKUserNotification *)notification;
+- (MUKUserNotification *)notificationForView:(MUKUserNotificationView *)view;
+
+- (MUKUserNotificationView *)newViewForNotification:(MUKUserNotification *)notification;
+- (void)configureView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
+
+- (void)didTapView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
+- (void)didSwipeUpView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
 @end

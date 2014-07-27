@@ -51,6 +51,8 @@
 		06C639C0198386A700CA1948 /* TabBarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarViewController.m; sourceTree = "<group>"; };
 		06C639C21983880D00CA1948 /* NavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationController.h; sourceTree = "<group>"; };
 		06C639C31983880D00CA1948 /* NavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationController.m; sourceTree = "<group>"; };
+		06C639C5198415D300CA1948 /* MUKUserNotificationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MUKUserNotificationView.h; sourceTree = "<group>"; };
+		06C639C6198415D300CA1948 /* MUKUserNotificationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MUKUserNotificationView.m; sourceTree = "<group>"; };
 		0C919C9FE56A46CE9E6CC9B6 /* libPods-MUKUserNotificationViewController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MUKUserNotificationViewController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		29E9DBEA28604FE1B0160A5C /* Pods-MUKUserNotificationViewController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MUKUserNotificationViewController.xcconfig"; path = "Pods/Pods-MUKUserNotificationViewController.xcconfig"; sourceTree = "<group>"; };
 		5137550E9D1C429486898E61 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -130,6 +132,8 @@
 				06C639B61982B2C900CA1948 /* MUKUserNotificationViewController.m */,
 				06C639BB1982DC8700CA1948 /* MUKUserNotification.h */,
 				06C639BC1982DC8700CA1948 /* MUKUserNotification.m */,
+				06C639C5198415D300CA1948 /* MUKUserNotificationView.h */,
+				06C639C6198415D300CA1948 /* MUKUserNotificationView.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";

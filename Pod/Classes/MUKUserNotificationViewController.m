@@ -18,7 +18,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 
 @property (nonatomic) BOOL viewWillAppearAlreadyCalled, hasGapAboveContentViewController, needsNavigationBarAdjustmentInLandscape;
 @property (nonatomic) CGFloat statusBarHeight;
-@property (nonatomic) NSMapTable *notificationToViewMapping;
+@property (nonatomic) NSMapTable *notificationToViewMapping, *viewToNotificationMapping;
 @end
 
 @implementation MUKUserNotificationViewController
@@ -150,10 +150,12 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     }
     
     // Create notification view
-    UIView *notificationView = [self newViewForUserNotification:notification];
+    MUKUserNotificationView *notificationView = [self newViewForNotification:notification];
+    [self configureView:notificationView forNotification:notification];
     
-    // Map view to notification
+    // Map view to notification (and viceversa)
     [self setView:notificationView forUserNotification:notification];
+    [self setUserNotification:notification forView:notificationView];
     
     // Move offscreen
     CGAffineTransform const targetTransform = notificationView.transform;
@@ -195,7 +197,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     }
     
     // Get view for notification
-    UIView *const notificationView = [self viewForUserNotification:notification];
+    UIView *const notificationView = [self viewForNotification:notification];
     
     // Remove from queue
     [self removeNotification:notification];
@@ -213,6 +215,10 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
         self.hasGapAboveContentViewController = NO;
     }
     
+    // Attempt navigation bar adjustment only in landscape and when last notification
+    // is about to be hidden
+    BOOL const shouldAttemptNavigationBarAdjustment = self.needsNavigationBarAdjustmentInLandscape && pendingNotificationCount == 0 && UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
+    
     // Animate out
     NSTimeInterval const duration = animated ? kNotificationViewAnimationDuration : 0.0;
     
@@ -229,7 +235,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
         [self setNeedsStatusBarAppearanceUpdate];
         
         // Adjust navigation bar if possible and needed
-        if (self.needsNavigationBarAdjustmentInLandscape) {
+        if (shouldAttemptNavigationBarAdjustment) {
             UINavigationController *navigationController = [self autodiscoveredContainedNavigationController];
             [navigationController setNavigationBarHidden:YES];
             [navigationController setNavigationBarHidden:NO];
@@ -261,11 +267,59 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     //
 }
 
+#pragma mark - Notification View
+
+- (MUKUserNotificationView *)viewForNotification:(MUKUserNotification *)notification {
+    if (!notification) {
+        return nil;
+    }
+    
+    return [self.notificationToViewMapping objectForKey:notification];
+}
+
+- (MUKUserNotification *)notificationForView:(MUKUserNotificationView *)view
+{
+    if (!view) {
+        return nil;
+    }
+    
+    return [self.viewToNotificationMapping objectForKey:view];
+}
+
+- (MUKUserNotificationView *)newViewForNotification:(MUKUserNotification *)notification
+{
+    CGRect const defaultFrame = [self defaultViewFrameForUserNotification:notification];
+    MUKUserNotificationView *view = [[MUKUserNotificationView alloc] initWithFrame:defaultFrame];
+    view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    
+    return view;
+}
+
+- (void)configureView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
+{
+    view.backgroundColor = notification.color ?: self.view.tintColor;
+    
+    // Set gesture recognizer actions
+    [view.tapGestureRecognizer addTarget:self action:@selector(handleNotificationViewTapGestureRecognizer:)];
+    [view.swipeUpGestureRecognizer addTarget:self action:@selector(handleNotificationViewSwipeUpGestureRecognizer:)];
+}
+
+- (void)didTapView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
+{
+    [self hideNotification:notification animated:YES completion:nil];
+}
+
+- (void)didSwipeUpView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
+{
+    [self hideNotification:notification animated:YES completion:nil];
+}
+
 #pragma mark - Private 
 
 static void CommonInit(MUKUserNotificationViewController *me) {
     me->_statusBarHeight = kDefaultStatusBarHeight;
     me->_notificationToViewMapping = [NSMapTable weakToWeakObjectsMapTable];
+    me->_viewToNotificationMapping = [NSMapTable weakToWeakObjectsMapTable];
     me->_notificationQueue = [[NSMutableArray alloc] init];
 }
 
@@ -371,13 +425,6 @@ static void CommonInit(MUKUserNotificationViewController *me) {
 
 #pragma mark - Private — Notification View
 
-- (UIView *)newViewForUserNotification:(MUKUserNotification *)notification {
-    UIView *view = [[UIView alloc] initWithFrame:[self viewFrameForUserNotification:notification]];
-    view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    view.backgroundColor = [self viewBackgroundColorForUserNotification:notification];
-    return view;
-}
-
 + (CGFloat)actualStatusBarHeight {
     CGRect const statusBarFrame = [[UIApplication sharedApplication] statusBarFrame];
     return fminf(CGRectGetWidth(statusBarFrame), CGRectGetHeight(statusBarFrame));
@@ -393,34 +440,50 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     }
 }
 
-- (CGRect)viewFrameForUserNotification:(MUKUserNotification *)notification {
+- (CGRect)defaultViewFrameForUserNotification:(MUKUserNotification *)notification {
     CGRect frame = CGRectZero;
     frame.size = CGSizeMake(CGRectGetWidth(self.view.bounds), self.statusBarHeight);
     return frame;
 }
 
-- (UIColor *)viewBackgroundColorForUserNotification:(MUKUserNotification *)notification
+- (void)handleNotificationViewTapGestureRecognizer:(UITapGestureRecognizer *)recognizer
 {
-    float (^randomValue)(void) = ^{
-        return (float)arc4random() / UINT_MAX;
-    };
-    
-    return [UIColor colorWithRed:randomValue() green:randomValue() blue:randomValue() alpha:1.0f];
-}
-
-#pragma mark - Private — Notification to view mapping
-
-- (UIView *)viewForUserNotification:(MUKUserNotification *)notification {
-    if (!notification) {
-        return nil;
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        MUKUserNotificationView *view = (MUKUserNotificationView *)recognizer.view;
+        MUKUserNotification *notification = [self notificationForView:view];
+        
+        if (view && notification) {
+            [self didTapView:view forNotification:notification];
+        }
     }
-    
-    return [self.notificationToViewMapping objectForKey:notification];
 }
 
-- (void)setView:(UIView *)view forUserNotification:(MUKUserNotification *)notification
+- (void)handleNotificationViewSwipeUpGestureRecognizer:(UISwipeGestureRecognizer *)recognizer
 {
-    [self.notificationToViewMapping setObject:view forKey:notification];
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        MUKUserNotificationView *view = (MUKUserNotificationView *)recognizer.view;
+        MUKUserNotification *notification = [self notificationForView:view];
+        
+        if (view && notification) {
+            [self didSwipeUpView:view forNotification:notification];
+        }
+    }
+}
+
+#pragma mark - Private — Notification <-> view mapping
+
+- (void)setView:(MUKUserNotificationView *)view forUserNotification:(MUKUserNotification *)notification
+{
+    if (view && notification) {
+        [self.notificationToViewMapping setObject:view forKey:notification];
+    }
+}
+
+- (void)setUserNotification:(MUKUserNotification *)notification forView:(MUKUserNotificationView *)view
+{
+    if (view && notification) {
+        [self.viewToNotificationMapping setObject:notification forKey:view];
+    }
 }
 
 #pragma mark - Private – Notifications
