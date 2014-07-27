@@ -11,7 +11,7 @@
 extern NSTimeInterval const MUKUserNotificationDurationInfinite;
 
 @interface MUKUserNotification : NSObject
-@property (nonatomic, copy) NSString *text;
+@property (nonatomic, copy) NSString *title, *text;
 @property (nonatomic) NSTimeInterval duration;
-@property (nonatomic) UIColor *color;
+@property (nonatomic) UIColor *color, *textColor;
 @end

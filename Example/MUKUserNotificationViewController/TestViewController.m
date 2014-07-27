@@ -57,8 +57,8 @@
 #pragma mark - Actions
 
 - (void)showExpiringNotificationButtonPressed:(id)sender {
-    MUKUserNotification *notification = [[MUKUserNotification alloc] init];
-    notification.text = @"Alert Message";
+    MUKUserNotification *notification = [self newNotification];
+    notification.text = nil;
     notification.duration = 2.0;
     
     [[self parentUserNotificationViewController] showNotification:notification animated:YES completion:^(BOOL completed)
@@ -68,8 +68,7 @@
 }
 
 - (void)showStickyNotificationButtonPressed:(id)sender {
-    MUKUserNotification *notification = [[MUKUserNotification alloc] init];
-    notification.text = @"Alert Message";
+    MUKUserNotification *notification = [self newNotification];
     notification.duration = MUKUserNotificationDurationInfinite;
     
     [[self parentUserNotificationViewController] showNotification:notification animated:YES completion:^(BOOL completed)
@@ -100,6 +99,13 @@
     } while (!foundViewController && viewController);
     
     return foundViewController;
+}
+
+- (MUKUserNotification *)newNotification {
+    MUKUserNotification *notification = [[MUKUserNotification alloc] init];
+    notification.title = @"Alert title. This is actually long as title, but it's needed because I need to test long lines wrapping. Bla bla bla bla bla bla.";
+    notification.text = @"Alert message. I need to test long lines wrapping. Bla bla bla bla bla bla. Gne gne gne gne gne.";
+    return notification;
 }
 
 @end

@@ -19,6 +19,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 @property (nonatomic) BOOL viewWillAppearAlreadyCalled, hasGapAboveContentViewController, needsNavigationBarAdjustmentInLandscape;
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) NSMapTable *notificationToViewMapping, *viewToNotificationMapping;
+@property (nonatomic) CGRect lastLayoutBounds;
 @end
 
 @implementation MUKUserNotificationViewController
@@ -78,6 +79,27 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     if (self.hasGapAboveContentViewController && UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]))
     {
         self.contentViewController.view.frame = [self contentViewControllerFrameWithInsets:UIEdgeInsetsMake(self.statusBarHeight, 0.0f, 0.0f, 0.0f)];
+    }
+    
+    // Find variation of size (e.g. autorotation)
+    BOOL layoutBoundsSizeChanged = NO;
+    if (CGRectIsNull(self.lastLayoutBounds)) {
+        self.lastLayoutBounds = self.view.bounds;
+        layoutBoundsSizeChanged = YES;
+    }
+    else if (!CGSizeEqualToSize(self.lastLayoutBounds.size, self.view.bounds.size))
+    {
+        self.lastLayoutBounds = self.view.bounds;
+        layoutBoundsSizeChanged = YES;
+    }
+    
+    // If layout size changes I have to resize notification views
+    if (layoutBoundsSizeChanged) {
+        CGSize const minumumSize = [self minimumUserNotificationViewSize];
+        for (MUKUserNotification *notification in self.notifications) {
+            MUKUserNotificationView *notificationView = [self viewForNotification:notification];
+            notificationView.frame = [self frameForView:notificationView notification:notification minimumSize:minumumSize];
+        } // for
     }
 }
 
@@ -152,6 +174,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     // Create notification view
     MUKUserNotificationView *notificationView = [self newViewForNotification:notification];
     [self configureView:notificationView forNotification:notification];
+    notificationView.frame = [self frameForView:notificationView notification:notification minimumSize:[self minimumUserNotificationViewSize]];
     
     // Map view to notification (and viceversa)
     [self setView:notificationView forUserNotification:notification];
@@ -288,8 +311,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 
 - (MUKUserNotificationView *)newViewForNotification:(MUKUserNotification *)notification
 {
-    CGRect const defaultFrame = [self defaultViewFrameForUserNotification:notification];
-    MUKUserNotificationView *view = [[MUKUserNotificationView alloc] initWithFrame:defaultFrame];
+    MUKUserNotificationView *view = [[MUKUserNotificationView alloc] initWithFrame:CGRectZero];
     view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     return view;
@@ -297,11 +319,23 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 
 - (void)configureView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
 {
+    view.titleLabel.text = notification.title;
+    view.textLabel.text = notification.text;
+    
+    view.titleLabel.textColor = notification.textColor ?: [UIColor whiteColor];
+    view.textLabel.textColor = notification.textColor ?: [UIColor whiteColor];
     view.backgroundColor = notification.color ?: self.view.tintColor;
     
     // Set gesture recognizer actions
     [view.tapGestureRecognizer addTarget:self action:@selector(handleNotificationViewTapGestureRecognizer:)];
     [view.swipeUpGestureRecognizer addTarget:self action:@selector(handleNotificationViewSwipeUpGestureRecognizer:)];
+}
+
+- (CGRect)frameForView:(MUKUserNotificationView *)view notification:(MUKUserNotification *)notification minimumSize:(CGSize)minimumSize
+{
+    CGFloat const maxHeight = roundf(CGRectGetHeight(self.view.frame) * 0.35f);
+    CGSize expandedSize = [view sizeThatFits:CGSizeMake(minimumSize.width, maxHeight)];
+    return CGRectMake(0.0f, 0.0f, minimumSize.width, fmaxf(minimumSize.height, expandedSize.height));
 }
 
 - (void)didTapView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
@@ -321,6 +355,7 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     me->_notificationToViewMapping = [NSMapTable weakToWeakObjectsMapTable];
     me->_viewToNotificationMapping = [NSMapTable weakToWeakObjectsMapTable];
     me->_notificationQueue = [[NSMutableArray alloc] init];
+    me->_lastLayoutBounds = CGRectNull;
 }
 
 - (UINavigationController *)autodiscoveredContainedNavigationController {
@@ -440,10 +475,8 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     }
 }
 
-- (CGRect)defaultViewFrameForUserNotification:(MUKUserNotification *)notification {
-    CGRect frame = CGRectZero;
-    frame.size = CGSizeMake(CGRectGetWidth(self.view.bounds), self.statusBarHeight);
-    return frame;
+- (CGSize)minimumUserNotificationViewSize {
+    return CGSizeMake(CGRectGetWidth(self.view.bounds), self.statusBarHeight);
 }
 
 - (void)handleNotificationViewTapGestureRecognizer:(UITapGestureRecognizer *)recognizer

@@ -31,6 +31,7 @@
 
 - (MUKUserNotificationView *)newViewForNotification:(MUKUserNotification *)notification;
 - (void)configureView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
+- (CGRect)frameForView:(MUKUserNotificationView *)view notification:(MUKUserNotification *)notification minimumSize:(CGSize)minimumSize;
 
 - (void)didTapView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
 - (void)didSwipeUpView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;

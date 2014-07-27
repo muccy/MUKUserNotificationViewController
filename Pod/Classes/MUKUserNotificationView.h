@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface MUKUserNotificationView : UIView
+@property (nonatomic, weak, readonly) UILabel *titleLabel, *textLabel;
+
 @property (nonatomic, readonly) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic, readonly) UISwipeGestureRecognizer *swipeUpGestureRecognizer;
 @end
