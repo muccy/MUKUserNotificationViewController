@@ -10,6 +10,8 @@
 #import <MUKUserNotificationViewController/MUKUserNotification.h>
 #import <MUKUserNotificationViewController/MUKUserNotificationView.h>
 
+extern NSTimeInterval const MUKUserNotificationViewControllerDefaultMinimumIntervalBetweenNotifications;
+
 typedef NS_ENUM(NSInteger, MUKUserNotificationViewPresentation) {
     MUKUserNotificationViewPresentationReplaceStatusBar = 0,
     MUKUserNotificationViewPresentationBehindStatusBar
@@ -18,6 +20,7 @@ typedef NS_ENUM(NSInteger, MUKUserNotificationViewPresentation) {
 @interface MUKUserNotificationViewController : UIViewController
 @property (nonatomic, strong) UIViewController *contentViewController;
 @property (nonatomic) MUKUserNotificationViewPresentation notificationViewsPresentation;
+@property (nonatomic) NSTimeInterval minimumIntervalBetweenNotifications;
 
 @property (nonatomic, readonly) NSArray *notifications;
 @property (nonatomic, readonly) MUKUserNotification *visibleNotification;

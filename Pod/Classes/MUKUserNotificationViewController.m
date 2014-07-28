@@ -8,6 +8,8 @@
 
 #import "MUKUserNotificationViewController.h"
 
+NSTimeInterval const MUKUserNotificationViewControllerDefaultMinimumIntervalBetweenNotifications = 1.0f;
+
 static NSTimeInterval const kNotificationViewAnimationDuration = 0.45;
 static CGFloat const kNotificationViewAnimationSpringDamping = 1.0f;
 static CGFloat const kNotificationViewAnimationSpringVelocity = 1.0f;
@@ -20,6 +22,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) NSMapTable *notificationToViewMapping, *viewToNotificationMapping;
 @property (nonatomic) CGRect lastLayoutBounds;
+@property (nonatomic) NSDate *lastNotificationPresentationDate;
 @end
 
 @implementation MUKUserNotificationViewController
@@ -136,86 +139,23 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 }
 
 - (MUKUserNotification *)visibleNotification {
-    return [self.notifications lastObject];
+    for (MUKUserNotification *notification in [self.notifications reverseObjectEnumerator])
+    {
+        // if it has not an associated view, it means notification view has not
+        // been presented yet (probabily because of rate limit)
+        if ([self viewForNotification:notification]) {
+            return notification;
+        }
+    }
+
+    return nil;
 }
 
 #pragma mark - Methods
 
 - (void)showNotification:(MUKUserNotification *)notification animated:(BOOL)animated completion:(void (^)(BOOL))completionHandler
 {
-    if (!notification) {
-        return;
-    }
-    
-    // Add to notification queue
-    [self addNotification:notification];
-    
-    // Get real status bar height if available
-    [self captureStatusBarHeightIfAvailable];
-    
-    // Don't touch content view controller if status bar is hidden and we are
-    // not in landscape (because UIKit implementation of UINavigationController)
-    BOOL const portraitStatusBar = UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]);
-    BOOL const statusBarHidden = [[UIApplication sharedApplication] isStatusBarHidden];
-    BOOL const shouldResizeContentViewController = !statusBarHidden && portraitStatusBar && [self couldHideStatusBar];
-    
-    // Mark if there is a gap above content view controller, preserving
-    // previous positive state
-    if (!self.hasGapAboveContentViewController) {
-        self.hasGapAboveContentViewController = !statusBarHidden && [self couldHideStatusBar];
-    }
-    
-    // Mark if navigation bar in landscape will be messed up, preserving
-    // previous positive state
-    if (!self.needsNavigationBarAdjustmentInLandscape) {
-        self.needsNavigationBarAdjustmentInLandscape = portraitStatusBar && !statusBarHidden && [self couldHideStatusBar];
-    }
-    
-    // Create notification view
-    MUKUserNotificationView *notificationView = [self newViewForNotification:notification];
-    [self configureView:notificationView forNotification:notification];
-    
-    // If status bar is not replaced, contents should not overlap with it
-    [self adjustNotificationViewPaddingIfNeeded:notificationView];
-    
-    // Adjust frame
-    notificationView.frame = [self frameForView:notificationView notification:notification minimumSize:[self minimumUserNotificationViewSize]];
-    
-    // Map view to notification (and viceversa)
-    [self setView:notificationView forUserNotification:notification];
-    [self setUserNotification:notification forView:notificationView];
-    
-    // Move offscreen
-    CGAffineTransform const targetTransform = notificationView.transform;
-    notificationView.transform = CGAffineTransformMakeTranslation(0.0f, -CGRectGetHeight(notificationView.frame));
-    
-    // Insert in view hierarchy
-    [self.view addSubview:notificationView];
-    
-    // Animate in
-    NSTimeInterval const duration = animated ? kNotificationViewAnimationDuration : 0.0;
-    [UIView animateWithDuration:duration delay:0.0 usingSpringWithDamping:kNotificationViewAnimationSpringDamping initialSpringVelocity:kNotificationViewAnimationSpringVelocity options:0 animations:^{
-        // Hide status bar
-        [self setNeedsStatusBarAppearanceUpdate];
-        
-        // Resize content view controller if needed
-        if (shouldResizeContentViewController) {
-            self.contentViewController.view.frame = [self contentViewControllerFrameWithInsets:UIEdgeInsetsMake(self.statusBarHeight, 0.0f, 0.0f, 0.0f)];
-        }
-        
-        // Move notification view in
-        notificationView.transform = targetTransform;
-    } completion:^(BOOL finished) {
-        // Set expiration if needed
-        if ([self notificationCanExpire:notification]) {
-            [self scheduleExpirationForNotification:notification];
-        }
-        
-        // Invoke completion handler if any
-        if (completionHandler) {
-            completionHandler(finished);
-        }
-    }];
+    [self showNotification:notification addToQueue:YES passingTest:nil animated:animated completion:completionHandler];
 }
 
 - (void)hideNotification:(MUKUserNotification *)notification animated:(BOOL)animated completion:(void (^)(BOOL))completionHandler
@@ -393,6 +333,7 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     me->_viewToNotificationMapping = [NSMapTable weakToWeakObjectsMapTable];
     me->_notificationQueue = [[NSMutableArray alloc] init];
     me->_lastLayoutBounds = CGRectNull;
+    me->_minimumIntervalBetweenNotifications = MUKUserNotificationViewControllerDefaultMinimumIntervalBetweenNotifications;
 }
 
 - (BOOL)couldHideStatusBar {
@@ -533,6 +474,117 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     }
 }
 
+- (void)showNotification:(MUKUserNotification *)notification addToQueue:(BOOL)addToQueue passingTest:(BOOL (^)(void))testBlock animated:(BOOL)animated completion:(void (^)(BOOL))completionHandler
+{
+    if (!notification) {
+        return;
+    }
+    
+    // Add to notification queue if needed
+    if (addToQueue) {
+        [self addNotification:notification];
+    }
+    
+    // Pass test before to proceed
+    BOOL const testPassed = testBlock ? testBlock() : YES;
+    if (!testPassed) {
+        return;
+    }
+    
+    // Check against rate limit
+    if (![self hasPassedMinimumIntervalFromLastNotification]) {
+        NSTimeInterval remainingInterval = [self missingTimeIntervalToNextPresentableNotification];
+        
+        // Retry later
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remainingInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^
+        {
+            // Deferred recursion
+            // Note addToQueue:NO, because I don't want to add model twice
+            // What is more I have to check if notification object is still
+            // inside queue (e.g. -hideNotification:... called during rate
+            // limit interval
+            [self showNotification:notification addToQueue:NO passingTest:^
+            {
+                return [self.notifications containsObject:notification];
+            } animated:animated completion:completionHandler];
+        });
+        
+        // Exit point
+        return;
+    }
+    
+    // Rate limit test is passed
+    // Presentation will take place now
+    self.lastNotificationPresentationDate = [NSDate date];
+    
+    // Get real status bar height if available
+    [self captureStatusBarHeightIfAvailable];
+    
+    // Don't touch content view controller if status bar is hidden and we are
+    // not in landscape (because UIKit implementation of UINavigationController)
+    BOOL const portraitStatusBar = UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]);
+    BOOL const statusBarHidden = [[UIApplication sharedApplication] isStatusBarHidden];
+    BOOL const shouldResizeContentViewController = !statusBarHidden && portraitStatusBar && [self couldHideStatusBar];
+    
+    // Mark if there is a gap above content view controller, preserving
+    // previous positive state
+    if (!self.hasGapAboveContentViewController) {
+        self.hasGapAboveContentViewController = !statusBarHidden && [self couldHideStatusBar];
+    }
+    
+    // Mark if navigation bar in landscape will be messed up, preserving
+    // previous positive state
+    if (!self.needsNavigationBarAdjustmentInLandscape) {
+        self.needsNavigationBarAdjustmentInLandscape = portraitStatusBar && !statusBarHidden && [self couldHideStatusBar];
+    }
+    
+    // Create notification view
+    MUKUserNotificationView *notificationView = [self newViewForNotification:notification];
+    [self configureView:notificationView forNotification:notification];
+    
+    // If status bar is not replaced, contents should not overlap with it
+    [self adjustNotificationViewPaddingIfNeeded:notificationView];
+    
+    // Adjust frame
+    notificationView.frame = [self frameForView:notificationView notification:notification minimumSize:[self minimumUserNotificationViewSize]];
+    
+    // Map view to notification (and viceversa)
+    [self setView:notificationView forUserNotification:notification];
+    [self setUserNotification:notification forView:notificationView];
+    
+    // Move offscreen
+    CGAffineTransform const targetTransform = notificationView.transform;
+    notificationView.transform = CGAffineTransformMakeTranslation(0.0f, -CGRectGetHeight(notificationView.frame));
+    
+    // Insert in view hierarchy
+    [self.view addSubview:notificationView];
+    
+    // Animate in
+    NSTimeInterval const duration = animated ? kNotificationViewAnimationDuration : 0.0;
+    [UIView animateWithDuration:duration delay:0.0 usingSpringWithDamping:kNotificationViewAnimationSpringDamping initialSpringVelocity:kNotificationViewAnimationSpringVelocity options:0 animations:^{
+        // Hide status bar
+        [self setNeedsStatusBarAppearanceUpdate];
+        
+        // Resize content view controller if needed
+        if (shouldResizeContentViewController) {
+            self.contentViewController.view.frame = [self contentViewControllerFrameWithInsets:UIEdgeInsetsMake(self.statusBarHeight, 0.0f, 0.0f, 0.0f)];
+        }
+        
+        // Move notification view in
+        notificationView.transform = targetTransform;
+    } completion:^(BOOL finished) {
+        // Set expiration if needed
+        if ([self notificationCanExpire:notification]) {
+            [self scheduleExpirationForNotification:notification];
+        }
+        
+        // Invoke completion handler if any
+        if (completionHandler) {
+            completionHandler(finished);
+        }
+    }];
+}
+
 #pragma mark - Private — Notification <-> view mapping
 
 - (void)setView:(MUKUserNotificationView *)view forUserNotification:(MUKUserNotification *)notification
@@ -591,6 +643,21 @@ static void CommonInit(MUKUserNotificationViewController *me) {
         [navController setNavigationBarHidden:YES animated:NO];
         [navController setNavigationBarHidden:NO animated:NO];
     } // for
+}
+
+#pragma mark - Private - Notification Rate Limit
+
+- (BOOL)hasPassedMinimumIntervalFromLastNotification {
+    if (!self.lastNotificationPresentationDate) {
+        return YES;
+    }
+    
+    return [self missingTimeIntervalToNextPresentableNotification] > 0.0;
+}
+
+- (NSTimeInterval)missingTimeIntervalToNextPresentableNotification {
+    NSTimeInterval interval = -[self.lastNotificationPresentationDate timeIntervalSinceNow];
+    return interval - self.minimumIntervalBetweenNotifications;
 }
 
 @end
