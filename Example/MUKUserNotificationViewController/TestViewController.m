@@ -9,7 +9,8 @@
 #import "TestViewController.h"
 #import <MUKUserNotificationViewController/MUKUserNotificationViewController.h>
 
-#define DEBUG_STATUS_BAR_HIDDEN     0
+#define DEBUG_STATUS_BAR_HIDDEN         0
+#define DEBUG_OVERLAPPING_PRESENTATION  0
 
 @interface TestViewController ()
 
@@ -26,10 +27,11 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+#if DEBUG_OVERLAPPING_PRESENTATION
+    [self parentUserNotificationViewController].notificationViewsPresentation = MUKUserNotificationViewPresentationBehindStatusBar;
+#endif
 }
 
 - (void)didReceiveMemoryWarning

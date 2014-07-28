@@ -10,7 +10,10 @@
 
 @interface MUKUserNotificationView : UIView
 @property (nonatomic, weak, readonly) UILabel *titleLabel, *textLabel;
+@property (nonatomic) UIEdgeInsets padding;
 
 @property (nonatomic, readonly) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic, readonly) UISwipeGestureRecognizer *swipeUpGestureRecognizer;
+
++ (UIEdgeInsets)defaultPadding;
 @end

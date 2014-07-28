@@ -11,7 +11,6 @@
 static CGFloat const kTextToTitleVerticalMargin = 2.0f;
 
 @interface MUKUserNotificationView ()
-@property (nonatomic) UIEdgeInsets padding;
 @property (nonatomic, weak) UIView *bottomSeparatorView;
 @end
 
@@ -82,13 +81,19 @@ static CGFloat const kTextToTitleVerticalMargin = 2.0f;
     return fittedSize;
 }
 
+#pragma mark - Methods
+
++ (UIEdgeInsets)defaultPadding {
+    return UIEdgeInsetsMake(4.0f, 8.0f, 4.0f, 8.0f);
+}
+
 #pragma mark - Private
 
 static void CommonInit(MUKUserNotificationView *me) {
     me.clipsToBounds = YES;
     [me createAndAttachGestureRecognizers];
     [me createAndInsertAllSubviews];
-    me->_padding = UIEdgeInsetsMake(4.0f, 8.0f, 4.0f, 8.0f);
+    me->_padding = [[me class] defaultPadding];
 }
 
 - (void)createAndAttachGestureRecognizers {
@@ -197,16 +202,21 @@ static void CommonInit(MUKUserNotificationView *me) {
         textHeight = CGRectGetHeight(self.textLabel.frame);
     }
     
+    CGFloat const maxHeight = CGRectGetHeight(self.bounds) - self.padding.top - self.padding.bottom;
+    
     // Center labels vertically
     if (!self.titleLabel.hidden && self.textLabel.hidden) {         // 1
         CGRect frame = self.titleLabel.frame;
-        frame.origin.y = roundf((CGRectGetHeight(self.bounds) - titleHeight)/2.0f);
+        
+        CGFloat y = roundf((maxHeight - titleHeight)/2.0f) + self.padding.top;
+        frame.origin.y = y;
+        
         self.titleLabel.frame = frame;
     }
     else if (self.titleLabel.hidden && !self.textLabel.hidden) {    // 2
         CGRect frame = self.textLabel.frame;
         
-        CGFloat y = roundf((CGRectGetHeight(self.bounds) - textHeight)/2.0f);
+        CGFloat y = roundf((maxHeight - textHeight)/2.0f);
         y = fmaxf(y, self.padding.top);
         
         CGFloat const maxHeight = CGRectGetHeight(self.bounds) - self.padding.top - self.padding.bottom;
@@ -217,8 +227,6 @@ static void CommonInit(MUKUserNotificationView *me) {
         self.textLabel.frame = frame;
     }
     else if (!self.titleLabel.hidden && !self.textLabel.hidden) {   // 3
-        CGFloat const maxHeight = CGRectGetHeight(self.bounds) - self.padding.top - self.padding.bottom;
-        
         // Calculate total vertical occupation
         CGFloat labelsCombinatedHeight = titleHeight;
         if (textHeight > 0.0f) {

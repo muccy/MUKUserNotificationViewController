@@ -10,8 +10,14 @@
 #import <MUKUserNotificationViewController/MUKUserNotification.h>
 #import <MUKUserNotificationViewController/MUKUserNotificationView.h>
 
+typedef NS_ENUM(NSInteger, MUKUserNotificationViewPresentation) {
+    MUKUserNotificationViewPresentationReplaceStatusBar = 0,
+    MUKUserNotificationViewPresentationBehindStatusBar
+};
+
 @interface MUKUserNotificationViewController : UIViewController
 @property (nonatomic, strong) UIViewController *contentViewController;
+@property (nonatomic) MUKUserNotificationViewPresentation notificationViewsPresentation;
 
 @property (nonatomic, readonly) NSArray *notifications;
 @property (nonatomic, readonly) MUKUserNotification *visibleNotification;

@@ -106,7 +106,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 #pragma mark - Overrides
 
 - (BOOL)prefersStatusBarHidden {
-    return [self.notifications count] > 0;
+    return [self couldHideStatusBar] && [self.notifications count] > 0;
 }
 
 - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
@@ -157,23 +157,28 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     // not in landscape (because UIKit implementation of UINavigationController)
     BOOL const portraitStatusBar = UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]);
     BOOL const statusBarHidden = [[UIApplication sharedApplication] isStatusBarHidden];
-    BOOL const shouldResizeContentViewController = !statusBarHidden && portraitStatusBar;
+    BOOL const shouldResizeContentViewController = !statusBarHidden && portraitStatusBar && [self couldHideStatusBar];
     
     // Mark if there is a gap above content view controller, preserving
     // previous positive state
     if (!self.hasGapAboveContentViewController) {
-        self.hasGapAboveContentViewController = !statusBarHidden;
+        self.hasGapAboveContentViewController = !statusBarHidden && [self couldHideStatusBar];
     }
     
     // Mark if navigation bar in landscape will be messed up, preserving
     // previous positive state
     if (!self.needsNavigationBarAdjustmentInLandscape) {
-        self.needsNavigationBarAdjustmentInLandscape = portraitStatusBar && !statusBarHidden;
+        self.needsNavigationBarAdjustmentInLandscape = portraitStatusBar && !statusBarHidden && [self couldHideStatusBar];
     }
     
     // Create notification view
     MUKUserNotificationView *notificationView = [self newViewForNotification:notification];
     [self configureView:notificationView forNotification:notification];
+    
+    // If status bar is not replaced, contents should not overlap with it
+    [self adjustNotificationViewPaddingIfNeeded:notificationView];
+    
+    // Adjust frame
     notificationView.frame = [self frameForView:notificationView notification:notification minimumSize:[self minimumUserNotificationViewSize]];
     
     // Map view to notification (and viceversa)
@@ -333,7 +338,9 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 {
     CGFloat const maxHeight = roundf(CGRectGetHeight(self.view.frame) * 0.35f);
     CGSize expandedSize = [view sizeThatFits:CGSizeMake(minimumSize.width, maxHeight)];
-    return CGRectMake(0.0f, 0.0f, minimumSize.width, fmaxf(minimumSize.height, expandedSize.height));
+    CGRect frame = CGRectMake(0.0f, 0.0f, minimumSize.width, fmaxf(minimumSize.height, expandedSize.height));
+    
+    return frame;
 }
 
 - (void)didTapView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
@@ -386,6 +393,10 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     me->_viewToNotificationMapping = [NSMapTable weakToWeakObjectsMapTable];
     me->_notificationQueue = [[NSMutableArray alloc] init];
     me->_lastLayoutBounds = CGRectNull;
+}
+
+- (BOOL)couldHideStatusBar {
+    return self.notificationViewsPresentation == MUKUserNotificationViewPresentationReplaceStatusBar;
 }
 
 #pragma mark - Private — Content View Controller
@@ -487,6 +498,15 @@ static void CommonInit(MUKUserNotificationViewController *me) {
 
 - (CGSize)minimumUserNotificationViewSize {
     return CGSizeMake(CGRectGetWidth(self.view.bounds), self.statusBarHeight);
+}
+
+- (void)adjustNotificationViewPaddingIfNeeded:(MUKUserNotificationView *)notificationView
+{
+    if (![self couldHideStatusBar]) {
+        UIEdgeInsets padding = notificationView.padding;
+        padding.top += self.statusBarHeight;
+        notificationView.padding = padding;
+    }
 }
 
 - (void)handleNotificationViewTapGestureRecognizer:(UITapGestureRecognizer *)recognizer
