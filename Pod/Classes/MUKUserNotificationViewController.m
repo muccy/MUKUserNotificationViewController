@@ -259,9 +259,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
         
         // Adjust navigation bar if possible and needed
         if (shouldAttemptNavigationBarAdjustment) {
-            UINavigationController *navigationController = [self autodiscoveredContainedNavigationController];
-            [navigationController setNavigationBarHidden:YES];
-            [navigationController setNavigationBarHidden:NO];
+            [self adjustNavigationBarOfAffectedNavigationControllers];
         }
     } completion:^(BOOL finished) {
         // No more need to preserve navigation bar if there aren't pending
@@ -348,6 +346,38 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     [self hideNotification:notification animated:YES completion:nil];
 }
 
+#pragma mark - Navigation Controllers
+
+- (NSArray *)affectedNavigationControllers {
+    NSMutableArray *navigationControllers = [[NSMutableArray alloc] init];
+    
+    if ([self.contentViewController isKindOfClass:[UINavigationController class]])
+    {
+        [navigationControllers addObject:self.contentViewController];
+    }
+    else if ([self.contentViewController isKindOfClass:[UITabBarController class]])
+    {
+        UITabBarController *tabBarController = (UITabBarController *)self.contentViewController;
+        
+        if ([tabBarController.selectedViewController isKindOfClass:[UINavigationController class]])
+        {
+            [navigationControllers addObject:tabBarController.selectedViewController];
+        }
+    }
+    
+    if (self.splitViewController) {
+        for (UIViewController *viewController in self.splitViewController.viewControllers)
+        {
+            if ([viewController isKindOfClass:[UINavigationController class]])
+            {
+                [navigationControllers addObject:viewController];
+            }
+        } // for
+    }
+    
+    return [navigationControllers copy];
+}
+
 #pragma mark - Private 
 
 static void CommonInit(MUKUserNotificationViewController *me) {
@@ -356,26 +386,6 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     me->_viewToNotificationMapping = [NSMapTable weakToWeakObjectsMapTable];
     me->_notificationQueue = [[NSMutableArray alloc] init];
     me->_lastLayoutBounds = CGRectNull;
-}
-
-- (UINavigationController *)autodiscoveredContainedNavigationController {
-    UINavigationController *navController = nil;
-    
-    if ([self.contentViewController isKindOfClass:[UINavigationController class]])
-    {
-        navController = (UINavigationController *)self.contentViewController;
-    }
-    else if ([self.contentViewController isKindOfClass:[UITabBarController class]])
-    {
-        UITabBarController *tabBarController = (UITabBarController *)self.contentViewController;
-        
-        if ([tabBarController.selectedViewController isKindOfClass:[UINavigationController class]])
-        {
-            navController = (UINavigationController *)tabBarController.selectedViewController;
-        }
-    }
-    
-    return navController;
 }
 
 #pragma mark - Private — Content View Controller
@@ -551,6 +561,16 @@ static void CommonInit(MUKUserNotificationViewController *me) {
             }];
         }
     });
+}
+
+#pragma mark - Private — Navigation Controllers
+
+- (void)adjustNavigationBarOfAffectedNavigationControllers {
+    for (UINavigationController *navController in [self affectedNavigationControllers])
+    {
+        [navController setNavigationBarHidden:YES animated:NO];
+        [navController setNavigationBarHidden:NO animated:NO];
+    } // for
 }
 
 @end

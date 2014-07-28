@@ -1,18 +1,18 @@
 //
-//  TabBarViewController.m
+//  SplitViewController.m
 //  MUKUserNotificationViewController
 //
-//  Created by Marco on 26/07/14.
+//  Created by Marco on 28/07/14.
 //  Copyright (c) 2014 Muccy. All rights reserved.
 //
 
-#import "TabBarViewController.h"
+#import "SplitViewController.h"
 
-@interface TabBarViewController ()
+@interface SplitViewController ()
 
 @end
 
-@implementation TabBarViewController
+@implementation SplitViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -36,7 +36,7 @@
 }
 
 - (UIViewController *)childViewControllerForStatusBarHidden {
-    return self.selectedViewController;
+    return [self.viewControllers lastObject];
 }
 
 @end

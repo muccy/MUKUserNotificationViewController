@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0603ED2F1986964000E3CF42 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0603ED2E1986964000E3CF42 /* SplitViewController.m */; };
 		06C639AF1982B20200CA1948 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 06C639AC1982B20200CA1948 /* .gitkeep */; };
 		06C639BA1982BD1300CA1948 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C639B91982BD1300CA1948 /* TestViewController.m */; };
 		06C639C1198386A700CA1948 /* TabBarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C639C0198386A700CA1948 /* TabBarViewController.m */; };
@@ -40,6 +41,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0603ED2D1986964000E3CF42 /* SplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitViewController.h; sourceTree = "<group>"; };
+		0603ED2E1986964000E3CF42 /* SplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitViewController.m; sourceTree = "<group>"; };
 		06C639AC1982B20200CA1948 /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		06C639B51982B2C900CA1948 /* MUKUserNotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MUKUserNotificationViewController.h; sourceTree = "<group>"; };
 		06C639B61982B2C900CA1948 /* MUKUserNotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MUKUserNotificationViewController.m; sourceTree = "<group>"; };
@@ -183,6 +186,8 @@
 				06C639C0198386A700CA1948 /* TabBarViewController.m */,
 				06C639C21983880D00CA1948 /* NavigationController.h */,
 				06C639C31983880D00CA1948 /* NavigationController.m */,
+				0603ED2D1986964000E3CF42 /* SplitViewController.h */,
+				0603ED2E1986964000E3CF42 /* SplitViewController.m */,
 				06C639B81982BD1200CA1948 /* TestViewController.h */,
 				06C639B91982BD1300CA1948 /* TestViewController.m */,
 				6003F59F195388D20070C39A /* Main_iPhone.storyboard */,
@@ -402,6 +407,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				06C639C1198386A700CA1948 /* TabBarViewController.m in Sources */,
+				0603ED2F1986964000E3CF42 /* SplitViewController.m in Sources */,
 				06C639BA1982BD1300CA1948 /* TestViewController.m in Sources */,
 				06C639C41983880D00CA1948 /* NavigationController.m in Sources */,
 				6003F59E195388D20070C39A /* AppDelegate.m in Sources */,

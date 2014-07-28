@@ -36,3 +36,7 @@
 - (void)didTapView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
 - (void)didSwipeUpView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
 @end
+
+@interface MUKUserNotificationViewController (NavigationControllers)
+- (NSArray *)affectedNavigationControllers;
+@end
