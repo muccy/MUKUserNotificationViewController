@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, MUKUserNotificationViewPresentation) {
 @property (nonatomic, strong) UIViewController *contentViewController;
 @property (nonatomic) MUKUserNotificationViewPresentation notificationViewsPresentation;
 @property (nonatomic) NSTimeInterval minimumIntervalBetweenNotifications;
+@property (nonatomic) BOOL notificationViewsSnapToNavigationBar;
 
 @property (nonatomic, readonly) NSArray *notifications;
 @property (nonatomic, readonly) MUKUserNotification *visibleNotification;

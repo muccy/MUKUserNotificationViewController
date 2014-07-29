@@ -14,6 +14,7 @@ static NSTimeInterval const kNotificationViewAnimationDuration = 0.45;
 static CGFloat const kNotificationViewAnimationSpringDamping = 1.0f;
 static CGFloat const kNotificationViewAnimationSpringVelocity = 1.0f;
 static CGFloat const kDefaultStatusBarHeight = 20.0f;
+static CGFloat const kNavigationBarSnapDifference = 14.0f;
 
 @interface MUKUserNotificationViewController ()
 @property (nonatomic, readwrite) NSMutableArray *notificationQueue;
@@ -280,6 +281,15 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     CGSize expandedSize = [view sizeThatFits:CGSizeMake(minimumSize.width, maxHeight)];
     CGRect frame = CGRectMake(0.0f, 0.0f, minimumSize.width, fmaxf(minimumSize.height, expandedSize.height));
     
+    if (self.notificationViewsSnapToNavigationBar) {
+        CGFloat const affectedNavigationBarsMaxY = [self affectedNavigationBarsMaxY];
+        CGFloat const diff = CGRectGetMaxY(frame) - affectedNavigationBarsMaxY;
+        
+        if (diff < 0.0f && fabsf(diff) < kNavigationBarSnapDifference) {
+            frame.size.height -= diff;
+        }
+    }
+    
     return frame;
 }
 
@@ -339,6 +349,8 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     me->_notificationQueue = [[NSMutableArray alloc] init];
     me->_lastLayoutBounds = CGRectNull;
     me->_minimumIntervalBetweenNotifications = MUKUserNotificationViewControllerDefaultMinimumIntervalBetweenNotifications;
+    me->_notificationViewsPresentation = MUKUserNotificationViewPresentationReplaceStatusBar;
+    me->_notificationViewsSnapToNavigationBar = YES;
 }
 
 - (BOOL)couldHideStatusBar {
@@ -652,6 +664,22 @@ static void CommonInit(MUKUserNotificationViewController *me) {
         [navController setNavigationBarHidden:YES animated:NO];
         [navController setNavigationBarHidden:NO animated:NO];
     } // for
+}
+
+- (CGFloat)affectedNavigationBarsMaxY {
+    CGFloat foundMaxY = -1.0f;
+    
+    for (UINavigationController *navigationController in [self affectedNavigationControllers])
+    {
+        CGRect const convertedNavigationBarFrame = [navigationController.navigationBar.superview convertRect:navigationController.navigationBar.frame toView:self.view];
+        CGFloat const maxY = CGRectGetMaxY(convertedNavigationBarFrame);
+        
+        if (maxY > 0.0f) {
+            foundMaxY = fmaxf(foundMaxY, maxY);
+        }
+    } // for
+    
+    return foundMaxY;
 }
 
 #pragma mark - Private - Notification Rate Limit
