@@ -1,11 +1,3 @@
-//
-//  MUKUserNotificationView.m
-//  MUKUserNotificationViewController
-//
-//  Created by Marco on 26/07/14.
-//  Copyright (c) 2014 Muccy. All rights reserved.
-//
-
 #import "MUKUserNotificationView.h"
 
 static CGFloat const kTextToTitleVerticalMargin = 2.0f;
