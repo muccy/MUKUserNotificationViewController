@@ -13,7 +13,7 @@
 @property (nonatomic) UIEdgeInsets padding;
 
 @property (nonatomic, readonly) UITapGestureRecognizer *tapGestureRecognizer;
-@property (nonatomic, readonly) UISwipeGestureRecognizer *swipeUpGestureRecognizer;
+@property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
 
 + (UIEdgeInsets)defaultPadding;
 @end

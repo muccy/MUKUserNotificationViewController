@@ -271,7 +271,7 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
     
     // Set gesture recognizer actions
     [view.tapGestureRecognizer addTarget:self action:@selector(handleNotificationViewTapGestureRecognizer:)];
-    [view.swipeUpGestureRecognizer addTarget:self action:@selector(handleNotificationViewSwipeUpGestureRecognizer:)];
+    [view.panGestureRecognizer addTarget:self action:@selector(handleNotificationViewPanGestureRecognizer:)];
 }
 
 - (CGRect)frameForView:(MUKUserNotificationView *)view notification:(MUKUserNotification *)notification minimumSize:(CGSize)minimumSize
@@ -285,10 +285,15 @@ static CGFloat const kDefaultStatusBarHeight = 20.0f;
 
 - (void)didTapView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
 {
-    [self hideNotification:notification animated:YES completion:nil];
+    if (notification.tapGestureHandler) {
+        notification.tapGestureHandler(self, view);
+    }
+    else {
+        [self hideNotification:notification animated:YES completion:nil];
+    }
 }
 
-- (void)didSwipeUpView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
+- (void)didPanUpView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
 {
     [self hideNotification:notification animated:YES completion:nil];
 }
@@ -462,14 +467,18 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     }
 }
 
-- (void)handleNotificationViewSwipeUpGestureRecognizer:(UISwipeGestureRecognizer *)recognizer
+- (void)handleNotificationViewPanGestureRecognizer:(UIPanGestureRecognizer *)recognizer
 {
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        MUKUserNotificationView *view = (MUKUserNotificationView *)recognizer.view;
-        MUKUserNotification *notification = [self notificationForView:view];
-        
-        if (view && notification) {
-            [self didSwipeUpView:view forNotification:notification];
+        CGPoint const translation = [recognizer translationInView:recognizer.view];
+        if (translation.y < 0.0f && fabsf(translation.y) > 0.3f * CGRectGetHeight(recognizer.view.frame))
+        {
+            MUKUserNotificationView *view = (MUKUserNotificationView *)recognizer.view;
+            MUKUserNotification *notification = [self notificationForView:view];
+            
+            if (view && notification) {
+                [self didPanUpView:view forNotification:notification];
+            }
         }
     }
 }

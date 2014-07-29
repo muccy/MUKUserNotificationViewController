@@ -107,6 +107,11 @@
     MUKUserNotification *notification = [[MUKUserNotification alloc] init];
     notification.title = @"Alert title. This is actually long as title, but it's needed because I need to test long lines wrapping. Bla bla bla bla bla bla.";
     notification.text = @"Alert message. I need to test long lines wrapping. Bla bla bla bla bla bla. Gne gne gne gne gne.";
+    notification.tapGestureHandler = ^(MUKUserNotificationViewController *viewController, MUKUserNotificationView *view)
+    {
+        NSLog(@"Tapped!");
+    };
+    
     return notification;
 }
 

@@ -97,12 +97,12 @@ static void CommonInit(MUKUserNotificationView *me) {
 }
 
 - (void)createAndAttachGestureRecognizers {
-    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
-    [self addGestureRecognizer:_tapGestureRecognizer];
+    _panGestureRecognizer = [[UIPanGestureRecognizer alloc] init];
+    [self addGestureRecognizer:_panGestureRecognizer];
     
-    _swipeUpGestureRecognizer = [[UISwipeGestureRecognizer alloc] init];
-    _swipeUpGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
-    [self addGestureRecognizer:_swipeUpGestureRecognizer];
+    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
+    [_tapGestureRecognizer requireGestureRecognizerToFail:_panGestureRecognizer];
+    [self addGestureRecognizer:_tapGestureRecognizer];
 }
 
 - (CGFloat)heightForTextContainedInLabel:(UILabel *)label maxSize:(CGSize)maxSize

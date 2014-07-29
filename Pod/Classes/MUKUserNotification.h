@@ -10,8 +10,12 @@
 
 extern NSTimeInterval const MUKUserNotificationDurationInfinite;
 
+@class MUKUserNotificationView, MUKUserNotificationViewController;
 @interface MUKUserNotification : NSObject
 @property (nonatomic, copy) NSString *title, *text;
 @property (nonatomic) NSTimeInterval duration;
 @property (nonatomic) UIColor *color, *textColor;
+@property (nonatomic) id userInfo;
+
+@property (nonatomic, copy) void (^tapGestureHandler)(MUKUserNotificationViewController *viewController, MUKUserNotificationView *view);
 @end

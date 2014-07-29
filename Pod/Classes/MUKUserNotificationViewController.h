@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, MUKUserNotificationViewPresentation) {
 - (CGRect)frameForView:(MUKUserNotificationView *)view notification:(MUKUserNotification *)notification minimumSize:(CGSize)minimumSize;
 
 - (void)didTapView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
-- (void)didSwipeUpView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
+- (void)didPanUpView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification;
 @end
 
 @interface MUKUserNotificationViewController (NavigationControllers)
