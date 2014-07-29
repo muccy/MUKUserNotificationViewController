@@ -305,7 +305,12 @@ static CGFloat const kNavigationBarSnapDifference = 14.0f;
 
 - (void)didPanUpView:(MUKUserNotificationView *)view forNotification:(MUKUserNotification *)notification
 {
-    [self hideNotification:notification animated:YES completion:nil];
+    if (notification.panUpGestureHandler) {
+        notification.panUpGestureHandler(self, view);
+    }
+    else {
+        [self hideNotification:notification animated:YES completion:nil];
+    }
 }
 
 #pragma mark - Navigation Controllers
