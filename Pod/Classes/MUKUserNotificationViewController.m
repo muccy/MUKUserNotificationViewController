@@ -16,6 +16,7 @@ static CGFloat const kNavigationBarSnapDifference = 14.0f;
 @property (nonatomic) NSMapTable *notificationToViewMapping, *viewToNotificationMapping;
 @property (nonatomic) CGRect lastLayoutBounds;
 @property (nonatomic) NSDate *lastNotificationPresentationDate;
+@property (nonatomic, weak) UIView *currentSnapshotView;
 @end
 
 @implementation MUKUserNotificationViewController
@@ -90,7 +91,11 @@ static CGFloat const kNavigationBarSnapDifference = 14.0f;
     }
     
     // If layout size changes I have to resize notification views
+    // Snapshot view is not valid anymore
     if (layoutBoundsSizeChanged) {
+        [self.currentSnapshotView removeFromSuperview];
+        self.currentSnapshotView = nil;
+        
         CGSize const minumumSize = [self minimumUserNotificationViewSize];
         for (MUKUserNotification *notification in self.notifications) {
             MUKUserNotificationView *notificationView = [self viewForNotification:notification];
@@ -180,6 +185,15 @@ static CGFloat const kNavigationBarSnapDifference = 14.0f;
     // is about to be hidden
     BOOL const shouldAttemptNavigationBarAdjustment = self.needsNavigationBarAdjustmentInLandscape && pendingNotificationCount == 0 && UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
     
+    // Overlay snapshot to cover animation glitches
+    BOOL const needsSnapshot = shouldResizeContentViewController && !self.currentSnapshotView;
+    UIView *snapshotView = nil;
+    if (needsSnapshot) {
+        // Create snapshot
+        snapshotView = [self newContentViewControllerSnapshotView];
+        [self insertContentViewControllerSnapshotView:snapshotView];
+    }
+    
     // Animate out
     NSTimeInterval const duration = animated ? kNotificationViewAnimationDuration : 0.0;
     
@@ -209,9 +223,19 @@ static CGFloat const kNavigationBarSnapDifference = 14.0f;
         // Remove view from view hierarchy
         [notificationView removeFromSuperview];
         
-        // Notify completion if needed
-        if (completionHandler) {
-            completionHandler(finished);
+        // Remove snapshot view
+        if (snapshotView) {
+            [self removeContentViewControllerSnapshotView:snapshotView animated:animated completion:^(BOOL snapshotAnimationFinished) {
+                if (completionHandler) {
+                    completionHandler(finished && snapshotAnimationFinished);
+                }
+            }];
+        }
+        else {
+            // Notify completion if needed
+            if (completionHandler) {
+                completionHandler(finished);
+            }
         }
     }];
 }
@@ -556,6 +580,15 @@ static void CommonInit(MUKUserNotificationViewController *me) {
         self.needsNavigationBarAdjustmentInLandscape = portraitStatusBar && !statusBarHidden && [self couldHideStatusBar];
     }
     
+    // Overlay snapshot to cover animation glitches
+    BOOL const needsSnapshot = shouldResizeContentViewController && !self.currentSnapshotView;
+    UIView *snapshotView = nil;
+    if (needsSnapshot) {
+        // Create snapshot
+        snapshotView = [self newContentViewControllerSnapshotView];
+        [self insertContentViewControllerSnapshotView:snapshotView];
+    }
+    
     // Create notification view
     MUKUserNotificationView *notificationView = [self newViewForNotification:notification];
     [self configureView:notificationView forNotification:notification];
@@ -574,7 +607,7 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     CGAffineTransform const targetTransform = notificationView.transform;
     notificationView.transform = CGAffineTransformMakeTranslation(0.0f, -CGRectGetHeight(notificationView.frame));
     
-    // Insert in view hierarchy
+    // Insert in view hierarchy aboe averything
     [self.view addSubview:notificationView];
     
     // Animate in
@@ -590,15 +623,26 @@ static void CommonInit(MUKUserNotificationViewController *me) {
         
         // Move notification view in
         notificationView.transform = targetTransform;
-    } completion:^(BOOL finished) {
-        // Set expiration if needed
-        if ([self notificationCanExpire:notification]) {
-            [self scheduleExpirationForNotification:notification];
-        }
+    } completion:^(BOOL inAnimationFinished) {
+        void (^completionBlock)(BOOL) = ^(BOOL animationsFinished) {
+            // Set expiration if needed
+            if ([self notificationCanExpire:notification]) {
+                [self scheduleExpirationForNotification:notification];
+            }
+            
+            // Invoke completion handler if any
+            if (completionHandler) {
+                completionHandler(animationsFinished);
+            }
+        };
         
-        // Invoke completion handler if any
-        if (completionHandler) {
-            completionHandler(finished);
+        if (snapshotView) {
+            [self removeContentViewControllerSnapshotView:snapshotView animated:animated completion:^(BOOL outAnimationFinished) {
+                completionBlock(inAnimationFinished && outAnimationFinished);
+            }];
+        }
+        else {
+            completionBlock(inAnimationFinished);
         }
     }];
 }
@@ -692,6 +736,41 @@ static void CommonInit(MUKUserNotificationViewController *me) {
 - (NSTimeInterval)missingTimeIntervalToNextPresentableNotification {
     NSTimeInterval interval = -[self.lastNotificationPresentationDate timeIntervalSinceNow];
     return interval - self.minimumIntervalBetweenNotifications;
+}
+
+#pragma mark - Private - Snapshot
+
+- (UIView *)newContentViewControllerSnapshotView {
+    if (!self.contentViewController.view) {
+        return nil;
+    }
+    
+    return [self.contentViewController.view snapshotViewAfterScreenUpdates:NO];
+}
+
+- (void)insertContentViewControllerSnapshotView:(UIView *)snapshotView {
+    // Insert snapshot above content view controller
+    if (snapshotView) {
+        CGRect frame = snapshotView.frame;
+        frame.origin = self.contentViewController.view.frame.origin;
+        snapshotView.frame = frame;
+        
+        [self.view insertSubview:snapshotView aboveSubview:self.contentViewController.view];
+        self.currentSnapshotView = snapshotView;
+    }
+}
+
+- (void)removeContentViewControllerSnapshotView:(UIView *)snapshotView animated:(BOOL)animated completion:(void (^)(BOOL finished))completionHandler
+{
+    [UIView animateWithDuration:0.2 animations:^{
+        snapshotView.alpha = 0.0f;
+    } completion:^(BOOL finished) {
+        [snapshotView removeFromSuperview];
+        
+        if (completionHandler) {
+            completionHandler(finished);
+        }
+    }];
 }
 
 @end
