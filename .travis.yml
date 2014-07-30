@@ -2,6 +2,10 @@
 
 language: objective-c
 before_install:
-- cd Example && pod install && cd $TRAVIS_BUILD_DIR
+    - gem install cocoapods --quiet
+    - pod --version
+	- cd Example
+	- ls ..
+    - pod install
 script:
-- xctool test -workspace Example/MUKUserNotificationViewController.xcworkspace -scheme MUKUserNotificationViewController -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
+	- xctool test -workspace Example/MUKUserNotificationViewController.xcworkspace -scheme MUKUserNotificationViewController -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
