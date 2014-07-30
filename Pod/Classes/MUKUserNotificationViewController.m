@@ -577,7 +577,7 @@ static void CommonInit(MUKUserNotificationViewController *me) {
     // Mark if navigation bar in landscape will be messed up, preserving
     // previous positive state
     if (!self.needsNavigationBarAdjustmentInLandscape) {
-        self.needsNavigationBarAdjustmentInLandscape = portraitStatusBar && !statusBarHidden && [self couldHideStatusBar];
+        self.needsNavigationBarAdjustmentInLandscape = (portraitStatusBar || self.splitViewController) && !statusBarHidden && [self couldHideStatusBar];
     }
     
     // Overlay snapshot to cover animation glitches
