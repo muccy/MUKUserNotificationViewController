@@ -115,7 +115,7 @@ static void CommonInit(TestViewController *me) {
     command.action = ^{
         MUKUserNotification *notification = [[MUKUserNotification alloc] init];
         notification.title = @"Alert Notification";
-        notification.text = @"More text to explain alert";
+        notification.text = @"More text to explain alert. This text could also split in multiple lines in order to give user more detail about this notification.";
         notification.duration = 1.5;
         notification.color = [UIColor redColor];
         
