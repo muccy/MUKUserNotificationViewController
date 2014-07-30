@@ -8,8 +8,5 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TestViewController : UIViewController
-- (IBAction)showExpiringNotificationButtonPressed:(id)sender;
-- (IBAction)showStickyNotificationButtonPressed:(id)sender;
-- (IBAction)hideNotificationButtonPressed:(id)sender;
+@interface TestViewController : UITableViewController
 @end

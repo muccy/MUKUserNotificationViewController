@@ -24,74 +24,6 @@
             </objects>
             <point key="canvasLocation" x="161" y="-127"/>
         </scene>
-        <!--Test View Controller - Hey Hey-->
-        <scene sceneID="pYo-ol-PSg">
-            <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="rzV-aM-PQI" customClass="TestViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="gLi-pm-MTA"/>
-                        <viewControllerLayoutGuide type="bottom" id="N4q-yc-74g"/>
-                    </layoutGuides>
-                    <view key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="7Oj-tX-T7Q">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hey" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tcn-s1-36e">
-                                <rect key="frame" x="134" y="74" width="53" height="36"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H8q-NE-hxe">
-                                <rect key="frame" x="67" y="118" width="186" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Show notification (expiring)">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="showExpiringNotificationButtonPressed:" destination="rzV-aM-PQI" eventType="touchUpInside" id="onJ-8k-UMG"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pFa-E8-a3E">
-                                <rect key="frame" x="75" y="146" width="171" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Show notification (sticky)">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="showStickyNotificationButtonPressed:" destination="rzV-aM-PQI" eventType="touchUpInside" id="ldU-6B-0Dw"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z5l-Pf-Cyc">
-                                <rect key="frame" x="104" y="175" width="112" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Hide notification">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="hideNotificationButtonPressed:" destination="rzV-aM-PQI" eventType="touchUpInside" id="CSX-zc-0dI"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" red="0.80000001190000003" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstItem="pFa-E8-a3E" firstAttribute="top" secondItem="H8q-NE-hxe" secondAttribute="bottom" constant="-2" id="1jv-K5-Mic"/>
-                            <constraint firstAttribute="centerX" secondItem="tcn-s1-36e" secondAttribute="centerX" constant="-0.5" id="7MC-5i-1ey"/>
-                            <constraint firstItem="tcn-s1-36e" firstAttribute="centerX" secondItem="pFa-E8-a3E" secondAttribute="centerX" id="DyG-DW-PmN"/>
-                            <constraint firstItem="tcn-s1-36e" firstAttribute="top" secondItem="gLi-pm-MTA" secondAttribute="bottom" constant="30" id="F1v-NX-3NH"/>
-                            <constraint firstItem="Z5l-Pf-Cyc" firstAttribute="top" secondItem="pFa-E8-a3E" secondAttribute="bottom" constant="-1" id="LTs-mY-p3n"/>
-                            <constraint firstItem="H8q-NE-hxe" firstAttribute="top" secondItem="tcn-s1-36e" secondAttribute="bottom" constant="8" id="Qk1-b1-agV"/>
-                            <constraint firstItem="tcn-s1-36e" firstAttribute="centerX" secondItem="Z5l-Pf-Cyc" secondAttribute="centerX" constant="0.5" id="gDt-GU-pUP"/>
-                            <constraint firstItem="tcn-s1-36e" firstAttribute="centerX" secondItem="H8q-NE-hxe" secondAttribute="centerX" constant="0.5" id="ojO-zl-KKG"/>
-                        </constraints>
-                    </view>
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Hey Hey" id="367-3U-8dB"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Cf5-kY-XKd" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1742" y="-127"/>
-        </scene>
         <!--Navigation Controller - Item-->
         <scene sceneID="gDX-mQ-XS6">
             <objects>
@@ -104,12 +36,32 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="rzV-aM-PQI" kind="relationship" relationship="rootViewController" id="TiR-R5-tKn"/>
+                        <segue destination="88I-QY-Hgt" kind="relationship" relationship="rootViewController" id="dBE-8x-KRs"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E5F-dV-BTy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1164" y="-127"/>
+        </scene>
+        <!--Test View Controller-->
+        <scene sceneID="o0s-cv-UYu">
+            <objects>
+                <tableViewController id="88I-QY-Hgt" customClass="TestViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Hje-65-eaO">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <sections/>
+                        <connections>
+                            <outlet property="dataSource" destination="88I-QY-Hgt" id="hqA-ud-t82"/>
+                            <outlet property="delegate" destination="88I-QY-Hgt" id="Mt2-Fx-7Zx"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="Whx-uG-mjF"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KYa-2x-I6V" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1637" y="-127"/>
         </scene>
         <!--Tab Bar View Controller-->
         <scene sceneID="5dT-hS-YhO">

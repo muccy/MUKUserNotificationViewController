@@ -12,8 +12,16 @@
 #define DEBUG_STATUS_BAR_HIDDEN         0
 #define DEBUG_OVERLAPPING_PRESENTATION  0
 
-@interface TestViewController ()
+@interface Command : NSObject
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) dispatch_block_t action;
+@end
 
+@implementation Command
+@end
+
+@interface TestViewController ()
+@property (nonatomic) NSArray *commands;
 @end
 
 @implementation TestViewController
@@ -22,30 +30,27 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        CommonInit(self);
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        CommonInit(self);
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+    
 #if DEBUG_OVERLAPPING_PRESENTATION
     [self parentUserNotificationViewController].notificationViewsPresentation = MUKUserNotificationViewPresentationBehindStatusBar;
 #endif
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
 }
 
 #pragma mark - Overrides
@@ -56,37 +61,12 @@
 }
 #endif
 
-#pragma mark - Actions
-
-- (void)showExpiringNotificationButtonPressed:(id)sender {
-    MUKUserNotification *notification = [self newNotification];
-    notification.text = nil;
-    notification.duration = 2.0;
-    
-    [[self parentUserNotificationViewController] showNotification:notification animated:YES completion:^(BOOL completed)
-     {
-         NSLog(@"Notification displayed (completed? %@)", completed ? @"Y" : @"N");
-     }];
-}
-
-- (void)showStickyNotificationButtonPressed:(id)sender {
-    MUKUserNotification *notification = [self newNotification];
-    notification.duration = MUKUserNotificationDurationInfinite;
-    
-    [[self parentUserNotificationViewController] showNotification:notification animated:YES completion:^(BOOL completed)
-     {
-         NSLog(@"Notification displayed (completed? %@)", completed ? @"Y" : @"N");
-     }];
-}
-
-- (IBAction)hideNotificationButtonPressed:(id)sender {
-    MUKUserNotificationViewController *const userNotificationViewController = [self parentUserNotificationViewController];
-    [userNotificationViewController hideNotification:userNotificationViewController.visibleNotification animated:YES completion:^(BOOL completed) {
-        NSLog(@"Notification hidden (completed? %@)", completed ? @"Y" : @"N");
-    }];
-}
-
 #pragma mark - Private
+
+static void CommonInit(TestViewController *me) {
+    me.title = @"Example";
+    me->_commands = [me newCommands];
+}
 
 - (MUKUserNotificationViewController *)parentUserNotificationViewController {
     UIViewController *viewController = self;
@@ -103,16 +83,83 @@
     return foundViewController;
 }
 
-- (MUKUserNotification *)newNotification {
-    MUKUserNotification *notification = [[MUKUserNotification alloc] init];
-    notification.title = @"Alert title. This is actually long as title, but it's needed because I need to test long lines wrapping. Bla bla bla bla bla bla.";
-    notification.text = @"Alert message. I need to test long lines wrapping. Bla bla bla bla bla bla. Gne gne gne gne gne.";
-    notification.tapGestureHandler = ^(MUKUserNotificationViewController *viewController, MUKUserNotificationView *view)
-    {
-        NSLog(@"Tapped!");
-    };
+#pragma mark - Private - Commands
+
+- (NSArray *)newCommands {
+    NSMutableArray *commands = [[NSMutableArray alloc] init];
+    __weak TestViewController *weakSelf = self;
     
-    return notification;
+    Command *command = [[Command alloc] init];
+    command.title = @"Hide Displayed Notification";
+    command.action = ^{
+        MUKUserNotificationViewController *const userNotificationViewController = [weakSelf parentUserNotificationViewController];
+        [userNotificationViewController hideNotification:userNotificationViewController.visibleNotification animated:YES completion:nil];
+    };
+    [commands addObject:command];
+    
+    command = [[Command alloc] init];
+    command.title = @"Show Sticky Notification";
+    command.action = ^{
+        MUKUserNotification *notification = [[MUKUserNotification alloc] init];
+        notification.title = @"Sticky Notification";
+        notification.tapGestureHandler = ^(MUKUserNotificationViewController *vc, MUKUserNotificationView *v) {};
+        notification.panUpGestureHandler = ^(MUKUserNotificationViewController *vc, MUKUserNotificationView *v) {};
+        notification.color = [UIColor colorWithRed:0.0f green:0.85f blue:0.0f alpha:1.0f];
+        
+        [[weakSelf parentUserNotificationViewController] showNotification:notification animated:YES completion:nil];
+    };
+    [commands addObject:command];
+    
+    command = [[Command alloc] init];
+    command.title = @"Show Alert Notification";
+    command.action = ^{
+        MUKUserNotification *notification = [[MUKUserNotification alloc] init];
+        notification.title = @"Alert Notification";
+        notification.text = @"More text to explain alert";
+        notification.duration = 1.5;
+        notification.color = [UIColor redColor];
+        
+        [[weakSelf parentUserNotificationViewController] showNotification:notification animated:YES completion:nil];
+    };
+    [commands addObject:command];
+    
+    return [commands copy];
+}
+
+- (Command *)commandAtIndexPath:(NSIndexPath *)indexPath {
+    if (!indexPath || indexPath.row < 0 || indexPath.row >= [self.commands count])
+    {
+        return nil;
+    }
+    
+    return self.commands[indexPath.row];
+}
+
+#pragma mark - <UITableViewDelegate>
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Command *command = [self commandAtIndexPath:indexPath];
+    if (command.action) {
+        command.action();
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+}
+
+#pragma mark - <UITableViewDataSource>
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.commands count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    Command *command = [self commandAtIndexPath:indexPath];
+    cell.textLabel.text = command.title;
+    
+    return cell;
 }
 
 @end
