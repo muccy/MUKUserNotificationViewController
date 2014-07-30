@@ -4,8 +4,6 @@ language: objective-c
 before_install:
 - gem install cocoapods --quiet
 - pod --version
-install:
-- cd Example && ls .. && pod install
 script:
 - xctool test -workspace Example/MUKUserNotificationViewController.xcworkspace -scheme MUKUserNotificationViewController -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
 notifications:
