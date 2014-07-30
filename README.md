@@ -20,6 +20,7 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 ## Screenshots
 
 [![Portrait Sticky Notification](http://i.imgur.com/K2uiyTyl.png)](http://i.imgur.com/K2uiyTy) [![Portrait Notification](http://i.imgur.com/gCnSEvLl.png)](http://imgur.com/gCnSEvL)
+
 [![Landscape Notification](http://i.imgur.com/t9bLMB9l.png)](http://imgur.com/t9bLMB9)
 
 ## Installation
