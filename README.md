@@ -5,6 +5,12 @@
 [![License](https://img.shields.io/cocoapods/l/MUKUserNotificationViewController.svg?style=flat)](http://cocoadocs.org/docsets/MUKUserNotificationViewController)
 [![Platform](https://img.shields.io/cocoapods/p/MUKUserNotificationViewController.svg?style=flat)](http://cocoadocs.org/docsets/MUKUserNotificationViewController)
 
+___
+
+# Deprecated in favor of [MUKUserNotificationController](http://github.com/muccy/MUKUserNotificationController)
+
+___
+
 MUKUserNotificationViewController is a container view controller which displays user notifications where status bar lives. Its functionality is highly inspired by Tweetbot. You will have features like:
 * sticky notifications;
 * temporary notifications with a custom duration;

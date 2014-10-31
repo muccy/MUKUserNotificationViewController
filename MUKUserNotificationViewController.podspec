@@ -23,4 +23,6 @@ Pod::Spec.new do |s|
   s.compiler_flags  = '-Wdocumentation'
 
   s.source_files = 'Pod/Classes'
+  
+  s.deprecated_in_favor_of = "MUKUserNotificationController";
 end
