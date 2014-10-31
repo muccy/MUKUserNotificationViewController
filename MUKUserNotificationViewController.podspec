@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "MUKUserNotificationViewController"
-  s.version          = "1.0.0"
+  s.version          = "1.0.1"
   s.summary          = "A view controller which displays user notification replacing status bar."
   s.description      = <<-DESC
                        MUKUserNotificationViewController is a container view controller which displays user notifications where status bar lives.
